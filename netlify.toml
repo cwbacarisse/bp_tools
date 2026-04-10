@@ -1,0 +1,12 @@
+[build]
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/session-write"
+  to = "/.netlify/functions/session-write"
+  status = 200
+
+[[redirects]]
+  from = "/api/session-read"
+  to = "/.netlify/functions/session-read"
+  status = 200
