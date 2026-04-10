@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>BRD Generator — BillingPlatform</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.min.js"></script>
 <style>
   :root {
     --bg: #f7f6f2;
@@ -372,6 +373,22 @@
 
   .copy-btn:hover { background: var(--accent-light); color: var(--accent); border-color: #b8d9c9; }
 
+  .download-btn {
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    padding: 5px 14px;
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: white;
+    transition: all 0.15s;
+  }
+
+  .download-btn:hover { background: var(--accent-mid); border-color: var(--accent-mid); }
+  .download-btn:disabled { background: var(--border2); border-color: var(--border2); cursor: not-allowed; }
+
   .output-body { padding: 1.25rem; min-height: 80px; }
 
   .output-body pre {
@@ -489,7 +506,10 @@
     <div class="output-card">
       <div class="output-toolbar">
         <span class="output-label" id="output-label">Generated BRD</span>
-        <button class="copy-btn" onclick="copyOutput()">Copy to clipboard</button>
+        <div style="display:flex;gap:8px">
+          <button class="copy-btn" onclick="copyOutput()">Copy to clipboard</button>
+          <button class="download-btn" id="download-btn" onclick="downloadDocx()">Download .docx</button>
+        </div>
       </div>
       <div class="output-body">
         <pre id="output-text"></pre>
@@ -589,16 +609,12 @@
 
   // ─── Session loader ───────────────────────────────────────────────────────────
 
-async function loadSession(sessionId) {
+  async function loadSession(sessionId) {
     showBanner('loading');
     try {
       const res = await fetch(`/api/session-read?id=${sessionId}`);
       if (!res.ok) throw new Error('Not found');
-      let data = await res.json();
-      // Unwrap Upstash envelope if present
-      if (data.value && typeof data.value === 'string') {
-        data = JSON.parse(data.value);
-      }
+      const data = await res.json();
 
       // Populate fields
       setField('feature-name',   data.feature);
@@ -748,6 +764,177 @@ Generate the complete BRD. Be specific and precise. Do not add any preamble or c
 
     btn.disabled = false;
     btn.textContent = 'Generate BRD';
+  }
+
+  // ─── Download as .docx ───────────────────────────────────────────────────────
+
+  async function downloadDocx() {
+    const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, LevelFormat } = docx;
+
+    const featureName    = document.getElementById('feature-name').value.trim() || 'BRD Document';
+    const userRole       = document.getElementById('user-role').value.trim() || 'a user';
+    const userNeed       = document.getElementById('user-need').value.trim();
+    const businessReason = document.getElementById('business-reason').value.trim();
+
+    const reqs = Array.from(document.querySelectorAll('#requirements-list .req-row input'))
+      .map(i => i.value.trim()).filter(Boolean);
+
+    const scenarios = Array.from(document.querySelectorAll('.scenario-block')).map(card => ({
+      given: card.querySelectorAll('textarea')[0]?.value.trim() || '',
+      when:  card.querySelector('input[type=text]')?.value.trim() || '',
+      then:  card.querySelectorAll('textarea')[1]?.value.trim() || '',
+      note:  card.querySelectorAll('textarea')[2]?.value.trim() || ''
+    }));
+
+    const btn = document.getElementById('download-btn');
+    btn.disabled = true;
+    btn.textContent = 'Building…';
+
+    // ── Helpers ────────────────────────────────────────────────────────────────
+
+    const spacer = () => new Paragraph({ children: [new TextRun('')] });
+
+    const boldLabel = (label, rest = '') => new Paragraph({
+      spacing: { before: 160, after: 60 },
+      children: [
+        new TextRun({ text: label, bold: true }),
+        ...(rest ? [new TextRun({ text: rest })] : [])
+      ]
+    });
+
+    const bodyPara = (text) => new Paragraph({
+      spacing: { before: 0, after: 100 },
+      children: [new TextRun({ text })]
+    });
+
+    const multiLine = (text) =>
+      text.split('\n').filter(l => l.trim()).map(line =>
+        new Paragraph({
+          spacing: { before: 0, after: 80 },
+          children: [new TextRun({ text: line.replace(/^[-•]\s*/, '') })]
+        })
+      );
+
+    // ── Build children ─────────────────────────────────────────────────────────
+
+    const children = [];
+
+    // Title
+    children.push(new Paragraph({
+      heading: HeadingLevel.HEADING_1,
+      spacing: { before: 0, after: 280 },
+      children: [new TextRun({ text: featureName, bold: true })]
+    }));
+
+    // User Story
+    children.push(new Paragraph({
+      heading: HeadingLevel.HEADING_2,
+      spacing: { before: 200, after: 100 },
+      children: [new TextRun({ text: 'User Story:', bold: true })]
+    }));
+    children.push(bodyPara(
+      `As ${userRole}, I need ${userNeed}${businessReason ? ', so that ' + businessReason : ''}.`
+    ));
+    children.push(spacer());
+
+    // Requirements
+    children.push(new Paragraph({
+      heading: HeadingLevel.HEADING_2,
+      spacing: { before: 200, after: 100 },
+      children: [new TextRun({ text: 'Requirements:', bold: true })]
+    }));
+    reqs.forEach(r => children.push(
+      new Paragraph({
+        numbering: { reference: 'bullets', level: 0 },
+        spacing: { before: 0, after: 80 },
+        children: [new TextRun({ text: r })]
+      })
+    ));
+    children.push(spacer());
+
+    // Scenarios
+    children.push(new Paragraph({
+      heading: HeadingLevel.HEADING_2,
+      spacing: { before: 200, after: 100 },
+      children: [new TextRun({ text: 'Scenarios for Development:', bold: true })]
+    }));
+
+    scenarios.forEach((s, i) => {
+      if (scenarios.length > 1) {
+        children.push(new Paragraph({
+          spacing: { before: 120, after: 80 },
+          children: [new TextRun({ text: `Scenario ${i + 1}`, bold: true, underline: {} })]
+        }));
+      }
+
+      children.push(boldLabel('GIVEN'));
+      multiLine(s.given).forEach(p => children.push(p));
+
+      children.push(spacer());
+      children.push(boldLabel('When'));
+      children.push(bodyPara(s.when));
+
+      children.push(spacer());
+      children.push(boldLabel('Then'));
+      multiLine(s.then).forEach(p => children.push(p));
+
+      if (s.note) {
+        children.push(spacer());
+        children.push(new Paragraph({
+          spacing: { before: 80, after: 80 },
+          children: [
+            new TextRun({ text: 'NOTE - ', bold: true }),
+            new TextRun({ text: s.note })
+          ]
+        }));
+      }
+
+      children.push(spacer());
+    });
+
+    // ── Assemble doc ───────────────────────────────────────────────────────────
+
+    const doc = new Document({
+      numbering: {
+        config: [{
+          reference: 'bullets',
+          levels: [{ level: 0, format: LevelFormat.BULLET, text: '\u2022',
+            alignment: AlignmentType.LEFT,
+            style: { paragraph: { indent: { left: 720, hanging: 360 } } } }]
+        }]
+      },
+      styles: {
+        default: { document: { run: { font: 'Arial', size: 24 } } },
+        paragraphStyles: [
+          { id: 'Heading1', name: 'Heading 1', basedOn: 'Normal', next: 'Normal', quickFormat: true,
+            run: { size: 36, bold: true, font: 'Arial', color: '1F3864' },
+            paragraph: { spacing: { before: 240, after: 240 }, outlineLevel: 0 } },
+          { id: 'Heading2', name: 'Heading 2', basedOn: 'Normal', next: 'Normal', quickFormat: true,
+            run: { size: 26, bold: true, font: 'Arial', color: '2E5090' },
+            paragraph: { spacing: { before: 200, after: 120 }, outlineLevel: 1 } }
+        ]
+      },
+      sections: [{
+        properties: {
+          page: {
+            size: { width: 12240, height: 15840 },
+            margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 }
+          }
+        },
+        children
+      }]
+    });
+
+    const buffer = await Packer.toBlob(doc);
+    const url = URL.createObjectURL(buffer);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `BRD-${featureName.replace(/[^a-z0-9]/gi, '-').slice(0, 60)}.docx`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    btn.disabled = false;
+    btn.textContent = 'Download .docx';
   }
 
   // ─── Init ─────────────────────────────────────────────────────────────────────
