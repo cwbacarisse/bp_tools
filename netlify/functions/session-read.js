@@ -1,5 +1,4 @@
 exports.handler = async (event) => {
-  // Only allow GET
   if (event.httpMethod !== 'GET') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
@@ -34,6 +33,7 @@ exports.handler = async (event) => {
 
     const data = await response.json();
 
+    // Upstash returns { result: "..." } — extract and parse the inner JSON string
     if (!data.result) {
       return {
         statusCode: 404,
@@ -45,7 +45,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers,
-      body: data.result // already a JSON string, pass through directly
+      body: data.result // this is already the JSON string of the BRD data
     };
 
   } catch (err) {
