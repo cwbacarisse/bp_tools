@@ -589,12 +589,16 @@
 
   // ─── Session loader ───────────────────────────────────────────────────────────
 
-  async function loadSession(sessionId) {
+async function loadSession(sessionId) {
     showBanner('loading');
     try {
       const res = await fetch(`/api/session-read?id=${sessionId}`);
       if (!res.ok) throw new Error('Not found');
-      const data = await res.json();
+      let data = await res.json();
+      // Unwrap Upstash envelope if present
+      if (data.value && typeof data.value === 'string') {
+        data = JSON.parse(data.value);
+      }
 
       // Populate fields
       setField('feature-name',   data.feature);
