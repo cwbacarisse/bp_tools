@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BRD Generator — BillingPlatform</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f7f6f2;
+    --surface: #ffffff;
+    --surface2: #f0ede6;
+    --border: #e2ddd6;
+    --border2: #ccc8c0;
+    --text: #1a1916;
+    --text2: #6b6760;
+    --text3: #9e9a94;
+    --accent: #2a5c45;
+    --accent-light: #e8f2ed;
+    --accent-mid: #3d7a5e;
+    --danger: #c0392b;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .logo-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  .header-tag {
+    font-size: 12px;
+    color: var(--text3);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  main {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  .page-title {
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .page-subtitle {
+    font-size: 14px;
+    color: var(--text2);
+    margin-bottom: 2.5rem;
+  }
+
+  .banner {
+    border-radius: var(--radius);
+    padding: 0.85rem 1.25rem;
+    margin-bottom: 1.25rem;
+    font-size: 13px;
+    font-weight: 500;
+    align-items: center;
+    gap: 8px;
+    display: none;
+  }
+
+  .banner.visible { display: flex; }
+
+  .banner-success {
+    background: var(--accent-light);
+    border: 1px solid #b8d9c9;
+    color: var(--accent);
+  }
+
+  .banner-loading {
+    background: #f5f5f0;
+    border: 1px solid var(--border2);
+    color: var(--text2);
+  }
+
+  .banner-error {
+    background: #fdf0ee;
+    border: 1px solid #f5c0ba;
+    color: var(--danger);
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .card-title {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text3);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .field-group { margin-bottom: 1rem; }
+  .field-group:last-child { margin-bottom: 0; }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text2);
+    margin-bottom: 5px;
+  }
+
+  input[type="text"], textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 9px 12px;
+    font-size: 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.15s;
+    resize: vertical;
+  }
+
+  input[type="text"]:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent-mid);
+    box-shadow: 0 0 0 3px rgba(42, 92, 69, 0.08);
+  }
+
+  .prefilled {
+    border-color: #b8d9c9 !important;
+    background: #f4faf7 !important;
+  }
+
+  ::placeholder { color: var(--text3); }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .req-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: center;
+  }
+
+  .req-row input { flex: 1; }
+
+  .icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text3);
+    font-size: 18px;
+    line-height: 1;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
+    flex-shrink: 0;
+  }
+
+  .icon-btn:hover { color: var(--danger); background: #fdf0ee; }
+
+  .add-btn {
+    width: 100%;
+    padding: 8px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text2);
+    background: none;
+    border: 1px dashed var(--border2);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    margin-top: 4px;
+    transition: all 0.15s;
+  }
+
+  .add-btn:hover {
+    background: var(--surface2);
+    color: var(--text);
+    border-color: var(--border2);
+  }
+
+  .scenario-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 10px;
+    position: relative;
+  }
+
+  .scenario-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .scenario-num {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+  }
+
+  .remove-scenario-btn {
+    font-size: 12px;
+    color: var(--text3);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 3px 8px;
+    border-radius: 4px;
+    transition: all 0.15s;
+  }
+
+  .remove-scenario-btn:hover { color: var(--danger); background: #fdf0ee; }
+
+  .scenario-field { margin-bottom: 10px; }
+  .scenario-field:last-child { margin-bottom: 0; }
+
+  .scenario-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text3);
+    margin-bottom: 5px;
+  }
+
+  .api-key-section {
+    background: var(--accent-light);
+    border: 1px solid #b8d9c9;
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .api-key-icon { font-size: 20px; flex-shrink: 0; }
+
+  .api-key-section label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .api-key-section input {
+    border-color: #b8d9c9;
+    background: white;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+  }
+
+  .api-key-section input:focus { border-color: var(--accent); }
+
+  .api-key-note {
+    font-size: 11px;
+    color: var(--accent-mid);
+    margin-top: 4px;
+  }
+
+  .generate-btn {
+    width: 100%;
+    padding: 13px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    letter-spacing: -0.01em;
+    transition: background 0.15s, transform 0.1s;
+  }
+
+  .generate-btn:hover { background: var(--accent-mid); }
+  .generate-btn:active { transform: scale(0.99); }
+  .generate-btn:disabled { background: var(--border2); cursor: not-allowed; transform: none; }
+
+  .output-section { margin-top: 1.5rem; display: none; }
+
+  .output-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .output-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 1rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+
+  .output-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text3);
+  }
+
+  .copy-btn {
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    padding: 5px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--text2);
+    transition: all 0.15s;
+  }
+
+  .copy-btn:hover { background: var(--accent-light); color: var(--accent); border-color: #b8d9c9; }
+
+  .output-body { padding: 1.25rem; min-height: 80px; }
+
+  .output-body pre {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    white-space: pre-wrap;
+    line-height: 1.8;
+  }
+
+  .status-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-right: 6px;
+    animation: pulse 1.2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  @media (max-width: 580px) {
+    .two-col { grid-template-columns: 1fr; }
+    main { padding: 1.5rem 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    BillingPlatform
+  </div>
+  <span class="header-tag">BRD Generator</span>
+</header>
+
+<main>
+  <h1 class="page-title">BRD Generator</h1>
+  <p class="page-subtitle">Fill in the details below to generate a formatted Business Requirements Document.</p>
+
+  <div class="banner banner-loading" id="banner-loading">
+    ⏳ Loading session data…
+  </div>
+  <div class="banner banner-success" id="banner-success">
+    ✦ Form pre-filled from Claude Code — review the fields below then click Generate.
+  </div>
+  <div class="banner banner-error" id="banner-error">
+    ⚠ Could not load session data. You can fill the form manually.
+  </div>
+
+  <!-- API Key -->
+  <div class="api-key-section">
+    <div class="api-key-icon">🔑</div>
+    <div style="flex:1">
+      <label for="api-key">Anthropic API Key</label>
+      <input type="password" id="api-key" placeholder="sk-ant-..." />
+      <div class="api-key-note">Your key is never stored or sent anywhere except the Anthropic API. Get yours at console.anthropic.com</div>
+    </div>
+  </div>
+
+  <!-- User Story -->
+  <div class="card">
+    <div class="card-title">User Story</div>
+    <div class="field-group">
+      <label>Feature / enhancement name</label>
+      <input type="text" id="feature-name" placeholder="e.g. Configurable Proration Rules for Mid-Cycle Subscription Changes" />
+    </div>
+    <div class="two-col">
+      <div class="field-group">
+        <label>User role</label>
+        <input type="text" id="user-role" placeholder="e.g. billing administrator" />
+      </div>
+      <div class="field-group">
+        <label>Product area</label>
+        <input type="text" id="product-area" placeholder="e.g. Billing Rules, GL, Revenue Rec" />
+      </div>
+    </div>
+    <div class="field-group">
+      <label>What the user needs</label>
+      <textarea id="user-need" rows="2" placeholder="e.g. the ability to define custom proration logic when a subscription is upgraded or downgraded mid-cycle"></textarea>
+    </div>
+    <div class="field-group">
+      <label>Why (the business reason)</label>
+      <textarea id="business-reason" rows="2" placeholder="e.g. so that invoice line items accurately reflect the time-based value of each rate plan during the billing period"></textarea>
+    </div>
+  </div>
+
+  <!-- Requirements -->
+  <div class="card">
+    <div class="card-title">Requirements</div>
+    <div id="requirements-list">
+      <div class="req-row">
+        <input type="text" placeholder="e.g. A proration method dropdown is available on the subscription rate plan" />
+        <button class="icon-btn" onclick="removeReq(this)" title="Remove">×</button>
+      </div>
+    </div>
+    <button class="add-btn" onclick="addReq()">+ add requirement</button>
+  </div>
+
+  <!-- Scenarios -->
+  <div class="card">
+    <div class="card-title">Scenarios for Development</div>
+    <div id="scenarios-list"></div>
+    <button class="add-btn" onclick="addScenario()">+ add scenario</button>
+  </div>
+
+  <button class="generate-btn" id="gen-btn" onclick="generateBRD()">Generate BRD</button>
+
+  <div class="output-section" id="output-section">
+    <div class="output-card">
+      <div class="output-toolbar">
+        <span class="output-label" id="output-label">Generated BRD</span>
+        <button class="copy-btn" onclick="copyOutput()">Copy to clipboard</button>
+      </div>
+      <div class="output-body">
+        <pre id="output-text"></pre>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  let scenarioCount = 0;
+
+  // ─── Helpers ─────────────────────────────────────────────────────────────────
+
+  function escHtml(str = '') {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function escAttr(str = '') {
+    return String(str).replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  function setField(id, value, highlight = true) {
+    if (!value) return;
+    const el = document.getElementById(id);
+    if (el) {
+      el.value = value;
+      if (highlight) el.classList.add('prefilled');
+    }
+  }
+
+  function showBanner(name) {
+    ['loading','success','error'].forEach(n => {
+      document.getElementById(`banner-${n}`).classList.toggle('visible', n === name);
+    });
+  }
+
+  // ─── Requirements ─────────────────────────────────────────────────────────────
+
+  function addReq(value = '', highlight = false) {
+    const list = document.getElementById('requirements-list');
+    const div = document.createElement('div');
+    div.className = 'req-row';
+    div.innerHTML = `<input type="text" placeholder="Add a requirement..." value="${escAttr(value)}" /><button class="icon-btn" onclick="removeReq(this)" title="Remove">×</button>`;
+    if (highlight && value) div.querySelector('input').classList.add('prefilled');
+    list.appendChild(div);
+  }
+
+  function removeReq(btn) {
+    const rows = document.querySelectorAll('.req-row');
+    if (rows.length > 1) btn.parentElement.remove();
+  }
+
+  // ─── Scenarios ───────────────────────────────────────────────────────────────
+
+  function addScenario(data = {}, highlight = false) {
+    scenarioCount++;
+    const list = document.getElementById('scenarios-list');
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = `
+      <div class="scenario-block">
+        <div class="scenario-header">
+          <span class="scenario-num">Scenario ${scenarioCount}</span>
+          <button class="remove-scenario-btn" onclick="removeScenario(this)">remove</button>
+        </div>
+        <div class="scenario-field">
+          <div class="scenario-label">Given — setup &amp; preconditions</div>
+          <textarea rows="3" placeholder="Describe the starting state and data setup..." class="${highlight && data.given ? 'prefilled' : ''}">${escHtml(data.given)}</textarea>
+        </div>
+        <div class="scenario-field">
+          <div class="scenario-label">When — trigger action</div>
+          <input type="text" placeholder="What action or event triggers this scenario?" value="${escAttr(data.when)}" class="${highlight && data.when ? 'prefilled' : ''}" />
+        </div>
+        <div class="scenario-field">
+          <div class="scenario-label">Then — expected outcomes</div>
+          <textarea rows="3" placeholder="What results or system behaviors are expected?" class="${highlight && data.then ? 'prefilled' : ''}">${escHtml(data.then)}</textarea>
+        </div>
+        <div class="scenario-field">
+          <div class="scenario-label">Note — old vs new behavior (optional)</div>
+          <textarea rows="2" placeholder="How does this differ from current behavior?" class="${highlight && data.note ? 'prefilled' : ''}">${escHtml(data.note)}</textarea>
+        </div>
+      </div>`;
+    list.appendChild(wrapper.firstElementChild);
+  }
+
+  function removeScenario(btn) {
+    if (document.querySelectorAll('.scenario-block').length > 1)
+      btn.closest('.scenario-block').remove();
+    renumberScenarios();
+  }
+
+  function renumberScenarios() {
+    document.querySelectorAll('.scenario-num').forEach((el, i) => {
+      el.textContent = `Scenario ${i + 1}`;
+    });
+    scenarioCount = document.querySelectorAll('.scenario-block').length;
+  }
+
+  // ─── Session loader ───────────────────────────────────────────────────────────
+
+  async function loadSession(sessionId) {
+    showBanner('loading');
+    try {
+      const res = await fetch(`/api/session-read?id=${sessionId}`);
+      if (!res.ok) throw new Error('Not found');
+      const data = await res.json();
+
+      // Populate fields
+      setField('feature-name',   data.feature);
+      setField('user-role',      data.role);
+      setField('product-area',   data.area);
+      setField('user-need',      data.need);
+      setField('business-reason',data.reason);
+
+      // Requirements
+      if (data.requirements?.length) {
+        document.getElementById('requirements-list').innerHTML = '';
+        data.requirements.forEach(r => addReq(r, true));
+      }
+
+      // Scenarios
+      if (data.scenarios?.length) {
+        data.scenarios.forEach(s => addScenario(s, true));
+      } else {
+        addScenario();
+      }
+
+      showBanner('success');
+    } catch (err) {
+      showBanner('error');
+      addScenario(); // ensure at least one blank scenario
+    }
+  }
+
+  // ─── Copy output ─────────────────────────────────────────────────────────────
+
+  function copyOutput() {
+    const text = document.getElementById('output-text').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.querySelector('.copy-btn');
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy to clipboard', 2000);
+    });
+  }
+
+  // ─── Generate BRD ────────────────────────────────────────────────────────────
+
+  async function generateBRD() {
+    const apiKey         = document.getElementById('api-key').value.trim();
+    const featureName    = document.getElementById('feature-name').value.trim();
+    const userRole       = document.getElementById('user-role').value.trim() || 'a user';
+    const productArea    = document.getElementById('product-area').value.trim();
+    const userNeed       = document.getElementById('user-need').value.trim();
+    const businessReason = document.getElementById('business-reason').value.trim();
+
+    if (!apiKey)                   { alert('Please enter your Anthropic API key.'); return; }
+    if (!featureName || !userNeed) { alert('Please fill in at least the feature name and user need.'); return; }
+
+    const reqs = Array.from(document.querySelectorAll('#requirements-list .req-row input'))
+      .map(i => i.value.trim()).filter(Boolean);
+
+    const scenarios = Array.from(document.querySelectorAll('.scenario-block')).map(card => ({
+      given: card.querySelectorAll('textarea')[0]?.value.trim(),
+      when:  card.querySelector('input[type=text]')?.value.trim(),
+      then:  card.querySelectorAll('textarea')[1]?.value.trim(),
+      note:  card.querySelectorAll('textarea')[2]?.value.trim()
+    }));
+
+    const btn = document.getElementById('gen-btn');
+    btn.disabled = true;
+    btn.textContent = 'Generating...';
+
+    const outputSection = document.getElementById('output-section');
+    const outputText    = document.getElementById('output-text');
+    const outputLabel   = document.getElementById('output-label');
+    outputSection.style.display = 'block';
+    outputLabel.innerHTML = '<span class="status-dot"></span> Generating...';
+    outputText.textContent = '';
+
+    const scenarioText = scenarios.map((s, i) => `
+Scenario ${scenarios.length > 1 ? i + 1 : ''}:
+GIVEN: ${s.given}
+WHEN: ${s.when}
+THEN: ${s.then}
+${s.note ? 'NOTE: ' + s.note : ''}`).join('\n');
+
+    const prompt = `You are a product manager assistant at BillingPlatform, a SaaS revenue lifecycle management platform. Generate a professional Business Requirements Document (BRD) story in the exact format below. Match the tone and structure precisely — formal but clear, using bullet points for requirements and Given/When/Then for scenarios.
+
+FORMAT:
+**User Story:**
+As [user role], I need [user need], so that [business reason].
+
+**Requirements:**
+* [requirement 1]
+* [requirement 2]
+...
+
+**Scenarios for Development:**
+
+**GIVEN**
+[setup/preconditions]
+
+**When**
+[trigger action]
+
+**Then**
+[expected outcomes]
+
+NOTE - [old vs new behavior context if provided]
+
+---
+INPUT:
+Feature name: ${featureName}
+Product area: ${productArea || 'not specified'}
+User role: ${userRole}
+User need: ${userNeed}
+Business reason: ${businessReason}
+Requirements: ${reqs.length ? reqs.map((r,i) => `${i+1}. ${r}`).join('\n') : 'infer reasonable requirements from the context'}
+${scenarioText}
+
+Generate the complete BRD. Be specific and precise. Do not add any preamble or closing remarks — output only the BRD content itself.`;
+
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1500,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        outputText.textContent = `Error: ${data.error.message}`;
+        outputLabel.textContent = 'Error';
+      } else {
+        const text = data.content?.map(b => b.text || '').join('') || 'No response received.';
+        outputText.textContent = text;
+        outputLabel.textContent = 'Generated BRD';
+      }
+    } catch (err) {
+      outputText.textContent = 'Network error. Check your API key and try again.';
+      outputLabel.textContent = 'Error';
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Generate BRD';
+  }
+
+  // ─── Init ─────────────────────────────────────────────────────────────────────
+
+  const sessionId = new URLSearchParams(window.location.search).get('session');
+  if (sessionId) {
+    loadSession(sessionId);
+  } else {
+    addScenario(); // blank form — add one empty scenario
+  }
+</script>
+</body>
+</html>
