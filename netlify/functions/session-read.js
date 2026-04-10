@@ -33,8 +33,10 @@ exports.handler = async (event) => {
 
     const data = await response.json();
 
-    // Upstash returns { result: "..." } — extract and parse the inner JSON string
-    if (!data.result) {
+    // Upstash can return { result: "..." } or { value: "...", ex: N } — handle both
+    const raw = data.result ?? data.value ?? null;
+
+    if (!raw) {
       return {
         statusCode: 404,
         headers,
@@ -42,10 +44,13 @@ exports.handler = async (event) => {
       };
     }
 
+    // raw is a JSON string — parse it and return the object directly
+    const parsed = JSON.parse(raw);
+
     return {
       statusCode: 200,
       headers,
-      body: data.result // this is already the JSON string of the BRD data
+      body: JSON.stringify(parsed)
     };
 
   } catch (err) {
