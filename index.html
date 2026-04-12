@@ -519,7 +519,7 @@
   </div>
 
   <button class="generate-btn" id="gen-btn" onclick="generateBRD()">Generate BRD</button>
-  <button class="download-direct-btn" id="download-direct-btn" onclick="downloadDocx()">⬇ Download .docx (no API key needed)</button>
+  <button class="download-direct-btn" id="download-direct-btn" onclick="downloadDocx()">Download</button>
 
   <div class="output-section" id="output-section">
     <div class="output-card">
@@ -789,173 +789,151 @@ Generate the complete BRD. Be specific and precise. Do not add any preamble or c
   // ─── Download as .docx ───────────────────────────────────────────────────────
 
   async function downloadDocx() {
-    const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, LevelFormat } = docx;
-
-    const featureName    = document.getElementById('feature-name').value.trim() || 'BRD Document';
-    const userRole       = document.getElementById('user-role').value.trim() || 'a user';
-    const userNeed       = document.getElementById('user-need').value.trim();
-    const businessReason = document.getElementById('business-reason').value.trim();
-
-    const reqs = Array.from(document.querySelectorAll('#requirements-list .req-row input'))
-      .map(i => i.value.trim()).filter(Boolean);
-
-    const scenarios = Array.from(document.querySelectorAll('.scenario-block')).map(card => ({
-      given: card.querySelectorAll('textarea')[0]?.value.trim() || '',
-      when:  card.querySelector('input[type=text]')?.value.trim() || '',
-      then:  card.querySelectorAll('textarea')[1]?.value.trim() || '',
-      note:  card.querySelectorAll('textarea')[2]?.value.trim() || ''
-    }));
-
     const btn = document.getElementById('download-btn');
     const btnDirect = document.getElementById('download-direct-btn');
     if (btn) { btn.disabled = true; btn.textContent = 'Building…'; }
     if (btnDirect) { btnDirect.disabled = true; btnDirect.textContent = '⏳ Building…'; }
 
-    // ── Helpers ────────────────────────────────────────────────────────────────
+    try {
+      const { Document, Packer, Paragraph, TextRun, HeadingLevel, BorderStyle, WidthType, Table, TableRow, TableCell, ShadingType } = docx;
 
-    const spacer = () => new Paragraph({ children: [new TextRun('')] });
+      const featureName    = document.getElementById('feature-name').value.trim() || 'BRD Document';
+      const userRole       = document.getElementById('user-role').value.trim() || 'a user';
+      const productArea    = document.getElementById('product-area').value.trim();
+      const userNeed       = document.getElementById('user-need').value.trim();
+      const businessReason = document.getElementById('business-reason').value.trim();
 
-    const boldLabel = (label, rest = '') => new Paragraph({
-      spacing: { before: 160, after: 60 },
-      children: [
-        new TextRun({ text: label, bold: true }),
-        ...(rest ? [new TextRun({ text: rest })] : [])
-      ]
-    });
+      const reqs = Array.from(document.querySelectorAll('#requirements-list .req-row input'))
+        .map(i => i.value.trim()).filter(Boolean);
 
-    const bodyPara = (text) => new Paragraph({
-      spacing: { before: 0, after: 100 },
-      children: [new TextRun({ text })]
-    });
+      const scenarios = Array.from(document.querySelectorAll('.scenario-block')).map(card => ({
+        given: card.querySelectorAll('textarea')[0]?.value.trim() || '',
+        when:  card.querySelector('input[type=text]')?.value.trim() || '',
+        then:  card.querySelectorAll('textarea')[1]?.value.trim() || '',
+        note:  card.querySelectorAll('textarea')[2]?.value.trim() || ''
+      }));
 
-    const multiLine = (text) =>
-      text.split('\n').filter(l => l.trim()).map(line =>
-        new Paragraph({
-          spacing: { before: 0, after: 80 },
-          children: [new TextRun({ text: line.replace(/^[-•]\s*/, '') })]
-        })
-      );
+      // ── Helpers ──────────────────────────────────────────────────────────────
 
-    // ── Build children ─────────────────────────────────────────────────────────
+      const spacer = (sz = 120) => new Paragraph({ spacing: { before: 0, after: sz }, children: [new TextRun('')] });
 
-    const children = [];
+      const h1 = (text) => new Paragraph({
+        spacing: { before: 0, after: 200 },
+        children: [new TextRun({ text, bold: true, size: 36, color: '172B4D', font: 'Calibri' })]
+      });
 
-    // Title
-    children.push(new Paragraph({
-      heading: HeadingLevel.HEADING_1,
-      spacing: { before: 0, after: 280 },
-      children: [new TextRun({ text: featureName, bold: true })]
-    }));
+      const h2 = (text) => new Paragraph({
+        spacing: { before: 280, after: 100 },
+        border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: 'DFE1E6' } },
+        children: [new TextRun({ text, bold: true, size: 24, color: '0052CC', font: 'Calibri' })]
+      });
 
-    // User Story
-    children.push(new Paragraph({
-      heading: HeadingLevel.HEADING_2,
-      spacing: { before: 200, after: 100 },
-      children: [new TextRun({ text: 'User Story:', bold: true })]
-    }));
-    children.push(bodyPara(
-      `As ${userRole}, I need ${userNeed}${businessReason ? ', so that ' + businessReason : ''}.`
-    ));
-    children.push(spacer());
+      const label = (text) => new Paragraph({
+        spacing: { before: 160, after: 40 },
+        children: [new TextRun({ text: text.toUpperCase(), bold: true, size: 18, color: '5E6C84', font: 'Calibri', allCaps: true })]
+      });
 
-    // Requirements
-    children.push(new Paragraph({
-      heading: HeadingLevel.HEADING_2,
-      spacing: { before: 200, after: 100 },
-      children: [new TextRun({ text: 'Requirements:', bold: true })]
-    }));
-    reqs.forEach(r => children.push(
-      new Paragraph({
-        numbering: { reference: 'bullets', level: 0 },
-        spacing: { before: 0, after: 80 },
-        children: [new TextRun({ text: r })]
-      })
-    ));
-    children.push(spacer());
+      const body = (text) => new Paragraph({
+        spacing: { before: 0, after: 120 },
+        children: [new TextRun({ text, size: 22, font: 'Calibri', color: '172B4D' })]
+      });
 
-    // Scenarios
-    children.push(new Paragraph({
-      heading: HeadingLevel.HEADING_2,
-      spacing: { before: 200, after: 100 },
-      children: [new TextRun({ text: 'Scenarios for Development:', bold: true })]
-    }));
-
-    scenarios.forEach((s, i) => {
-      if (scenarios.length > 1) {
-        children.push(new Paragraph({
-          spacing: { before: 120, after: 80 },
-          children: [new TextRun({ text: `Scenario ${i + 1}`, bold: true, underline: {} })]
-        }));
-      }
-
-      children.push(boldLabel('GIVEN'));
-      multiLine(s.given).forEach(p => children.push(p));
-
-      children.push(spacer());
-      children.push(boldLabel('When'));
-      children.push(bodyPara(s.when));
-
-      children.push(spacer());
-      children.push(boldLabel('Then'));
-      multiLine(s.then).forEach(p => children.push(p));
-
-      if (s.note) {
-        children.push(spacer());
-        children.push(new Paragraph({
-          spacing: { before: 80, after: 80 },
-          children: [
-            new TextRun({ text: 'NOTE - ', bold: true }),
-            new TextRun({ text: s.note })
-          ]
-        }));
-      }
-
-      children.push(spacer());
-    });
-
-    // ── Assemble doc ───────────────────────────────────────────────────────────
-
-    const doc = new Document({
-      numbering: {
-        config: [{
-          reference: 'bullets',
-          levels: [{ level: 0, format: LevelFormat.BULLET, text: '\u2022',
-            alignment: AlignmentType.LEFT,
-            style: { paragraph: { indent: { left: 720, hanging: 360 } } } }]
-        }]
-      },
-      styles: {
-        default: { document: { run: { font: 'Arial', size: 24 } } },
-        paragraphStyles: [
-          { id: 'Heading1', name: 'Heading 1', basedOn: 'Normal', next: 'Normal', quickFormat: true,
-            run: { size: 36, bold: true, font: 'Arial', color: '1F3864' },
-            paragraph: { spacing: { before: 240, after: 240 }, outlineLevel: 0 } },
-          { id: 'Heading2', name: 'Heading 2', basedOn: 'Normal', next: 'Normal', quickFormat: true,
-            run: { size: 26, bold: true, font: 'Arial', color: '2E5090' },
-            paragraph: { spacing: { before: 200, after: 120 }, outlineLevel: 1 } }
+      const bullet = (text) => new Paragraph({
+        spacing: { before: 40, after: 40 },
+        indent: { left: 360, hanging: 260 },
+        children: [
+          new TextRun({ text: '\u2022  ', size: 22, font: 'Calibri', color: '0052CC', bold: true }),
+          new TextRun({ text, size: 22, font: 'Calibri', color: '172B4D' })
         ]
-      },
-      sections: [{
-        properties: {
-          page: {
-            size: { width: 12240, height: 15840 },
-            margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 }
-          }
-        },
-        children
-      }]
-    });
+      });
 
-    const buffer = await Packer.toBlob(doc);
-    const url = URL.createObjectURL(buffer);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `BRD-${featureName.replace(/[^a-z0-9]/gi, '-').slice(0, 60)}.docx`;
-    a.click();
-    URL.revokeObjectURL(url);
+      const scenarioLabel = (key, text) => [
+        new Paragraph({
+          spacing: { before: 120, after: 40 },
+          children: [new TextRun({ text: key, bold: true, size: 20, color: '0052CC', font: 'Calibri', allCaps: true })]
+        }),
+        new Paragraph({
+          spacing: { before: 0, after: 100 },
+          children: [new TextRun({ text, size: 22, font: 'Calibri', color: '172B4D' })]
+        })
+      ];
+
+      // ── Build doc ─────────────────────────────────────────────────────────────
+
+      const children = [];
+
+      // Title block
+      children.push(h1(featureName));
+      if (productArea) children.push(new Paragraph({
+        spacing: { before: 0, after: 40 },
+        children: [new TextRun({ text: `Product Area: ${productArea}`, size: 20, color: '5E6C84', font: 'Calibri', italics: true })]
+      }));
+      children.push(spacer(80));
+
+      // ── User Story ──
+      children.push(h2('User Story'));
+      children.push(body(`As ${userRole}, I need ${userNeed}${businessReason ? ', so that ' + businessReason : ''}.`));
+
+      // ── Requirements ──
+      children.push(h2('Requirements'));
+      reqs.forEach(r => children.push(bullet(r)));
+
+      // ── Scenarios ──
+      children.push(h2('Scenarios for Development'));
+
+      scenarios.forEach((s, i) => {
+        if (scenarios.length > 1) {
+          children.push(new Paragraph({
+            spacing: { before: 160, after: 80 },
+            children: [new TextRun({ text: `Scenario ${i + 1}`, bold: true, size: 22, font: 'Calibri', color: '172B4D', underline: { type: 'single' } })]
+          }));
+        }
+        scenarioLabel('Given', s.given).forEach(p => children.push(p));
+        scenarioLabel('When', s.when).forEach(p => children.push(p));
+        scenarioLabel('Then', s.then).forEach(p => children.push(p));
+        if (s.note) {
+          children.push(new Paragraph({
+            spacing: { before: 120, after: 80 },
+            children: [
+              new TextRun({ text: 'NOTE:  ', bold: true, size: 20, font: 'Calibri', color: 'FF991F' }),
+              new TextRun({ text: s.note, size: 20, font: 'Calibri', color: '5E6C84', italics: true })
+            ]
+          }));
+        }
+        if (i < scenarios.length - 1) children.push(spacer(200));
+      });
+
+      // ── Assemble ──────────────────────────────────────────────────────────────
+
+      const doc = new Document({
+        sections: [{
+          properties: {
+            page: {
+              size: { width: 12240, height: 15840 },
+              margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 }
+            }
+          },
+          children
+        }]
+      });
+
+      const buffer = await Packer.toBlob(doc);
+      const url = URL.createObjectURL(buffer);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `BRD-${featureName.replace(/[^a-z0-9]/gi, '-').slice(0, 60)}.docx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+    } catch (err) {
+      alert('Error generating document: ' + err.message);
+      console.error(err);
+    }
 
     if (btn) { btn.disabled = false; btn.textContent = 'Download .docx'; }
-    if (btnDirect) { btnDirect.disabled = false; btnDirect.textContent = '⬇ Download .docx (no API key needed)'; }
+    if (btnDirect) { btnDirect.disabled = false; btnDirect.textContent = 'Download'; }
   }
 
   // ─── Init ─────────────────────────────────────────────────────────────────────
