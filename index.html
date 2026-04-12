@@ -332,6 +332,24 @@
   .generate-btn:active { transform: scale(0.99); }
   .generate-btn:disabled { background: var(--border2); cursor: not-allowed; transform: none; }
 
+  .download-direct-btn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 11px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    color: var(--accent);
+    border: 1.5px solid #b8d9c9;
+    border-radius: var(--radius);
+    cursor: pointer;
+    letter-spacing: -0.01em;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .download-direct-btn:hover { background: var(--accent-light); border-color: var(--accent-mid); }
+  .download-direct-btn:disabled { color: var(--text3); border-color: var(--border); cursor: not-allowed; }
+
   .output-section { margin-top: 1.5rem; display: none; }
 
   .output-card {
@@ -501,6 +519,7 @@
   </div>
 
   <button class="generate-btn" id="gen-btn" onclick="generateBRD()">Generate BRD</button>
+  <button class="download-direct-btn" id="download-direct-btn" onclick="downloadDocx()">⬇ Download .docx (no API key needed)</button>
 
   <div class="output-section" id="output-section">
     <div class="output-card">
@@ -788,8 +807,9 @@ Generate the complete BRD. Be specific and precise. Do not add any preamble or c
     }));
 
     const btn = document.getElementById('download-btn');
-    btn.disabled = true;
-    btn.textContent = 'Building…';
+    const btnDirect = document.getElementById('download-direct-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Building…'; }
+    if (btnDirect) { btnDirect.disabled = true; btnDirect.textContent = '⏳ Building…'; }
 
     // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -934,8 +954,8 @@ Generate the complete BRD. Be specific and precise. Do not add any preamble or c
     a.click();
     URL.revokeObjectURL(url);
 
-    btn.disabled = false;
-    btn.textContent = 'Download .docx';
+    if (btn) { btn.disabled = false; btn.textContent = 'Download .docx'; }
+    if (btnDirect) { btnDirect.disabled = false; btnDirect.textContent = '⬇ Download .docx (no API key needed)'; }
   }
 
   // ─── Init ─────────────────────────────────────────────────────────────────────
