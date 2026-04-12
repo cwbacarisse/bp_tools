@@ -795,11 +795,10 @@ Generate the complete BRD. Be specific and precise. Do not add any preamble or c
     if (btnDirect) { btnDirect.disabled = true; btnDirect.textContent = '⏳ Building…'; }
 
     try {
-      const { Document, Packer, Paragraph, TextRun, HeadingLevel, BorderStyle, WidthType, Table, TableRow, TableCell, ShadingType } = docx;
+      const { Document, Packer, Paragraph, TextRun } = docx;
 
       const featureName    = document.getElementById('feature-name').value.trim() || 'BRD Document';
       const userRole       = document.getElementById('user-role').value.trim() || 'a user';
-      const productArea    = document.getElementById('product-area').value.trim();
       const userNeed       = document.getElementById('user-need').value.trim();
       const businessReason = document.getElementById('business-reason').value.trim();
 
@@ -813,94 +812,107 @@ Generate the complete BRD. Be specific and precise. Do not add any preamble or c
         note:  card.querySelectorAll('textarea')[2]?.value.trim() || ''
       }));
 
-      // ── Helpers ──────────────────────────────────────────────────────────────
+      // ── Helpers — match REV-1365 Jira format exactly ──────────────────────────
 
-      const spacer = (sz = 120) => new Paragraph({ spacing: { before: 0, after: sz }, children: [new TextRun('')] });
+      const F = 'Calibri';
+      const SZ = 22; // 11pt
 
-      const h1 = (text) => new Paragraph({
-        spacing: { before: 0, after: 200 },
-        children: [new TextRun({ text, bold: true, size: 36, color: '172B4D', font: 'Calibri' })]
+      // Title: large bold
+      const title = (text) => new Paragraph({
+        spacing: { before: 0, after: 240 },
+        children: [new TextRun({ text, bold: true, size: 32, font: F })]
       });
 
-      const h2 = (text) => new Paragraph({
-        spacing: { before: 280, after: 100 },
-        border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: 'DFE1E6' } },
-        children: [new TextRun({ text, bold: true, size: 24, color: '0052CC', font: 'Calibri' })]
+      // **Section Header:** bold with colon, e.g. "User Story:"
+      const sectionHeader = (text) => new Paragraph({
+        spacing: { before: 240, after: 100 },
+        children: [new TextRun({ text: `${text}:`, bold: true, size: SZ, font: F })]
       });
 
-      const label = (text) => new Paragraph({
-        spacing: { before: 160, after: 40 },
-        children: [new TextRun({ text: text.toUpperCase(), bold: true, size: 18, color: '5E6C84', font: 'Calibri', allCaps: true })]
-      });
-
+      // Plain body paragraph
       const body = (text) => new Paragraph({
         spacing: { before: 0, after: 120 },
-        children: [new TextRun({ text, size: 22, font: 'Calibri', color: '172B4D' })]
+        children: [new TextRun({ text, size: SZ, font: F })]
       });
 
+      // Bullet item — "* text" style matching Jira
       const bullet = (text) => new Paragraph({
         spacing: { before: 40, after: 40 },
-        indent: { left: 360, hanging: 260 },
+        indent: { left: 440, hanging: 280 },
         children: [
-          new TextRun({ text: '\u2022  ', size: 22, font: 'Calibri', color: '0052CC', bold: true }),
-          new TextRun({ text, size: 22, font: 'Calibri', color: '172B4D' })
+          new TextRun({ text: '\u2022  ', size: SZ, font: F }),
+          new TextRun({ text, size: SZ, font: F })
         ]
       });
 
-      const scenarioLabel = (key, text) => [
-        new Paragraph({
-          spacing: { before: 120, after: 40 },
-          children: [new TextRun({ text: key, bold: true, size: 20, color: '0052CC', font: 'Calibri', allCaps: true })]
-        }),
-        new Paragraph({
-          spacing: { before: 0, after: 100 },
-          children: [new TextRun({ text, size: 22, font: 'Calibri', color: '172B4D' })]
-        })
-      ];
+      // **GIVEN** / **When** / **Then** bold label on its own line
+      const scenLabel = (text) => new Paragraph({
+        spacing: { before: 200, after: 80 },
+        children: [new TextRun({ text, bold: true, size: SZ, font: F })]
+      });
 
-      // ── Build doc ─────────────────────────────────────────────────────────────
+      // Scenario body — may contain multiple lines
+      const scenBody = (text) => text.split('\n').filter(l => l.trim()).map(line => {
+        const isBullet = /^[*\-•]/.test(line.trim());
+        const clean = line.replace(/^[*\-•]\s*/, '').trim();
+        return isBullet
+          ? bullet(clean)
+          : new Paragraph({ spacing: { before: 0, after: 100 }, children: [new TextRun({ text: clean, size: SZ, font: F })] });
+      });
+
+      // ── Build document ────────────────────────────────────────────────────────
 
       const children = [];
 
-      // Title block
-      children.push(h1(featureName));
-      if (productArea) children.push(new Paragraph({
-        spacing: { before: 0, after: 40 },
-        children: [new TextRun({ text: `Product Area: ${productArea}`, size: 20, color: '5E6C84', font: 'Calibri', italics: true })]
-      }));
-      children.push(spacer(80));
+      // Title
+      children.push(title(featureName));
 
-      // ── User Story ──
-      children.push(h2('User Story'));
+      // User Story
+      children.push(sectionHeader('User Story'));
       children.push(body(`As ${userRole}, I need ${userNeed}${businessReason ? ', so that ' + businessReason : ''}.`));
 
-      // ── Requirements ──
-      children.push(h2('Requirements'));
+      // Requirements
+      children.push(sectionHeader('Requirements'));
       reqs.forEach(r => children.push(bullet(r)));
 
-      // ── Scenarios ──
-      children.push(h2('Scenarios for Development'));
+      // Scenarios
+      children.push(sectionHeader('Scenarios for Development'));
 
       scenarios.forEach((s, i) => {
         if (scenarios.length > 1) {
           children.push(new Paragraph({
-            spacing: { before: 160, after: 80 },
-            children: [new TextRun({ text: `Scenario ${i + 1}`, bold: true, size: 22, font: 'Calibri', color: '172B4D', underline: { type: 'single' } })]
+            spacing: { before: 200, after: 80 },
+            children: [new TextRun({ text: `Scenario ${i + 1}`, bold: true, underline: { type: 'single' }, size: SZ, font: F })]
           }));
         }
-        scenarioLabel('Given', s.given).forEach(p => children.push(p));
-        scenarioLabel('When', s.when).forEach(p => children.push(p));
-        scenarioLabel('Then', s.then).forEach(p => children.push(p));
+
+        // GIVEN
+        children.push(scenLabel('GIVEN'));
+        scenBody(s.given).forEach(p => children.push(p));
+
+        // When
+        children.push(scenLabel('When'));
+        scenBody(s.when).forEach(p => children.push(p));
+
+        // Then
+        children.push(scenLabel('Then'));
+        scenBody(s.then).forEach(p => children.push(p));
+
+        // NOTE
         if (s.note) {
           children.push(new Paragraph({
-            spacing: { before: 120, after: 80 },
+            spacing: { before: 160, after: 80 },
             children: [
-              new TextRun({ text: 'NOTE:  ', bold: true, size: 20, font: 'Calibri', color: 'FF991F' }),
-              new TextRun({ text: s.note, size: 20, font: 'Calibri', color: '5E6C84', italics: true })
+              new TextRun({ text: 'NOTE - ', bold: true, size: SZ, font: F }),
+              new TextRun({ text: s.note, size: SZ, font: F })
             ]
           }));
         }
-        if (i < scenarios.length - 1) children.push(spacer(200));
+
+        // Divider between scenarios
+        if (i < scenarios.length - 1) {
+          children.push(new Paragraph({ spacing: { before: 0, after: 200 }, children: [new TextRun('')] }));
+        }
       });
 
       // ── Assemble ──────────────────────────────────────────────────────────────
