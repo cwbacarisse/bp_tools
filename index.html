@@ -614,7 +614,8 @@
     try {
       const res = await fetch(`/api/session-read?id=${sessionId}`);
       if (!res.ok) throw new Error('Not found');
-      const data = await res.json();
+      const raw = await res.json();
+      const data = typeof raw.value === 'string' ? JSON.parse(raw.value) : raw;
 
       // Populate fields
       setField('feature-name',   data.feature);
