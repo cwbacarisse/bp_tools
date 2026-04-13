@@ -4,37 +4,54 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>BRD Generator — BillingPlatform</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <style>
   :root {
-    --bg: #f7f6f2;
-    --surface: #ffffff;
-    --surface2: #f0ede6;
-    --border: #e2ddd6;
-    --border2: #ccc8c0;
-    --text: #1a1916;
-    --text2: #6b6760;
-    --text3: #9e9a94;
-    --accent: #2a5c45;
-    --accent-light: #e8f2ed;
-    --accent-mid: #3d7a5e;
-    --danger: #c0392b;
-    --radius: 10px;
-    --radius-sm: 6px;
+    --bg:            #0F1117;
+    --surface:       #1A1D27;
+    --surface2:      #1E2130;
+    --surface3:      #232638;
+    --border:        #2A2D3A;
+    --border2:       #363A4D;
+    --text:          #F1F5F9;
+    --text2:         #94A3B8;
+    --text3:         #64748B;
+    --accent:        #4F8EF7;
+    --accent-light:  rgba(79,142,247,0.10);
+    --accent-glow:   rgba(79,142,247,0.20);
+    --accent-mid:    #6BA3F8;
+    --success:       #34D399;
+    --success-light: rgba(52,211,153,0.10);
+    --success-border:rgba(52,211,153,0.25);
+    --amber:         #F59E0B;
+    --amber-light:   rgba(245,158,11,0.10);
+    --danger:        #F87171;
+    --danger-light:  rgba(248,113,113,0.10);
+    --danger-border: rgba(248,113,113,0.25);
+    --radius:        10px;
+    --radius-sm:     6px;
+    --font-display:  'Syne', sans-serif;
+    --font-body:     'DM Sans', sans-serif;
+    --font-mono:     'DM Mono', monospace;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 15% 40%, rgba(79,142,247,0.05) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 10%, rgba(52,211,153,0.03) 0%, transparent 50%);
     color: var(--text);
     min-height: 100vh;
   }
 
   header {
-    background: var(--surface);
+    background: rgba(26,29,39,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
     padding: 0 2rem;
     height: 56px;
@@ -50,10 +67,11 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    font-family: var(--font-display);
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--text);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
   }
 
   .logo-dot {
@@ -61,33 +79,40 @@
     height: 8px;
     background: var(--accent);
     border-radius: 50%;
+    box-shadow: 0 0 8px var(--accent-glow), 0 0 16px rgba(79,142,247,0.15);
   }
 
   .header-tag {
-    font-size: 12px;
+    font-family: var(--font-display);
+    font-size: 11px;
     color: var(--text3);
-    font-weight: 400;
-    letter-spacing: 0.04em;
+    font-weight: 600;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
   }
 
   main {
     max-width: 780px;
     margin: 0 auto;
-    padding: 2.5rem 1.5rem 4rem;
+    padding: 2.5rem 1.5rem 5rem;
   }
 
   .page-title {
-    font-size: 26px;
-    font-weight: 600;
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 800;
     letter-spacing: -0.03em;
     color: var(--text);
     margin-bottom: 4px;
+    background: linear-gradient(135deg, #F1F5F9 0%, #94A3B8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .page-subtitle {
     font-size: 14px;
-    color: var(--text2);
+    color: var(--text3);
     margin-bottom: 2.5rem;
   }
 
@@ -102,9 +127,9 @@
     display: none;
   }
   .banner.visible { display: flex; }
-  .banner-success { background: var(--accent-light); border: 1px solid #b8d9c9; color: var(--accent); }
-  .banner-loading { background: #f5f5f0; border: 1px solid var(--border2); color: var(--text2); }
-  .banner-error   { background: #fdf0ee; border: 1px solid #f5c0ba; color: var(--danger); }
+  .banner-success { background: var(--success-light); border: 1px solid var(--success-border); color: var(--success); }
+  .banner-loading { background: var(--accent-light); border: 1px solid rgba(79,142,247,0.25); color: var(--accent-mid); }
+  .banner-error   { background: var(--danger-light); border: 1px solid var(--danger-border); color: var(--danger); }
 
   .card {
     background: var(--surface);
@@ -112,17 +137,18 @@
     border-radius: var(--radius);
     padding: 1.5rem;
     margin-bottom: 1rem;
+    transition: border-color 0.2s;
   }
+  .card:hover { border-color: var(--border2); }
 
-  .card-tech {
-    border-left: 3px solid var(--border2);
-  }
+  .card-tech { border-left: 2px solid var(--accent); }
 
   .card-title {
-    font-size: 12px;
-    font-weight: 600;
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.1em;
     color: var(--text3);
     margin-bottom: 1.25rem;
     padding-bottom: 0.75rem;
@@ -134,6 +160,7 @@
     color: var(--text3);
     margin-top: 10px;
     font-style: italic;
+    line-height: 1.6;
   }
 
   .field-group { margin-bottom: 1rem; }
@@ -141,357 +168,250 @@
 
   label {
     display: block;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     color: var(--text2);
-    margin-bottom: 5px;
+    margin-bottom: 6px;
+    letter-spacing: 0.01em;
   }
 
   input[type="text"], textarea, select {
     width: 100%;
-    background: var(--surface);
+    background: var(--bg);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     padding: 9px 12px;
     font-size: 14px;
     color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    transition: border-color 0.15s;
+    font-family: var(--font-body);
+    transition: border-color 0.15s, box-shadow 0.15s;
     resize: vertical;
+    appearance: none;
   }
 
-  select { resize: none; cursor: pointer; }
+  select {
+    resize: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748B' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
 
   input[type="text"]:focus, textarea:focus, select:focus {
     outline: none;
-    border-color: var(--accent-mid);
-    box-shadow: 0 0 0 3px rgba(42,92,69,0.08);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-light), 0 0 12px rgba(79,142,247,0.08);
   }
 
-  .prefilled { border-color: #b8d9c9 !important; background: #f4faf7 !important; }
+  .prefilled { border-color: rgba(79,142,247,0.4) !important; background: rgba(79,142,247,0.05) !important; }
   ::placeholder { color: var(--text3); }
+  option { background: var(--surface); color: var(--text); }
 
-  .two-col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-  .req-row {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 8px;
-    align-items: center;
-  }
+  .req-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
   .req-row input { flex: 1; }
 
   .icon-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text3);
-    font-size: 18px;
-    line-height: 1;
-    padding: 2px 4px;
-    border-radius: 4px;
-    transition: color 0.15s, background 0.15s;
-    flex-shrink: 0;
+    background: none; border: none; cursor: pointer;
+    color: var(--text3); font-size: 18px; line-height: 1;
+    padding: 2px 4px; border-radius: 4px;
+    transition: color 0.15s, background 0.15s; flex-shrink: 0;
   }
-  .icon-btn:hover { color: var(--danger); background: #fdf0ee; }
+  .icon-btn:hover { color: var(--danger); background: var(--danger-light); }
 
   .add-btn {
-    width: 100%;
-    padding: 8px;
-    font-size: 13px;
-    font-family: 'DM Sans', sans-serif;
-    color: var(--text2);
-    background: none;
-    border: 1px dashed var(--border2);
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    margin-top: 4px;
-    transition: all 0.15s;
+    width: 100%; padding: 8px; font-size: 13px;
+    font-family: var(--font-body); color: var(--text3);
+    background: none; border: 1px dashed var(--border2);
+    border-radius: var(--radius-sm); cursor: pointer;
+    margin-top: 4px; transition: all 0.15s;
   }
-  .add-btn:hover { background: var(--surface2); color: var(--text); }
+  .add-btn:hover { background: var(--surface2); color: var(--text2); border-color: var(--accent); }
 
-  /* Scenario blocks */
-  .scenario-block {
+  .scenario-block, .example-block {
     background: var(--surface2);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 1.25rem;
     margin-bottom: 10px;
+    transition: border-color 0.2s;
+  }
+  .scenario-block:hover, .example-block:hover { border-color: var(--border2); }
+
+  .scenario-header, .example-header {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 1rem;
   }
 
-  .scenario-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-
-  .scenario-num {
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+  .scenario-num, .example-num {
+    font-family: var(--font-display);
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
     color: var(--accent);
   }
 
   .remove-scenario-btn, .remove-example-btn {
-    font-size: 12px;
-    color: var(--text3);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 3px 8px;
-    border-radius: 4px;
-    transition: all 0.15s;
+    font-size: 12px; color: var(--text3);
+    background: none; border: none; cursor: pointer;
+    padding: 3px 8px; border-radius: 4px;
+    font-family: var(--font-body); transition: all 0.15s;
   }
-  .remove-scenario-btn:hover, .remove-example-btn:hover { color: var(--danger); background: #fdf0ee; }
+  .remove-scenario-btn:hover, .remove-example-btn:hover { color: var(--danger); background: var(--danger-light); }
 
   .scenario-field, .example-field { margin-bottom: 10px; }
   .scenario-field:last-child, .example-field:last-child { margin-bottom: 0; }
 
   .scenario-label, .example-label {
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text3);
-    margin-bottom: 5px;
-  }
-
-  /* Example blocks */
-  .example-block {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.25rem;
-    margin-bottom: 10px;
-  }
-
-  .example-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-
-  .example-num {
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--accent);
+    font-family: var(--font-display);
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text3); margin-bottom: 5px;
   }
 
   .example-type-area { display: none; }
   .example-type-area.active { display: block; }
 
-  .image-upload-pair {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 8px;
-  }
+  .image-upload-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
 
   .image-upload-box {
-    border: 1px dashed var(--border2);
-    border-radius: var(--radius-sm);
-    padding: 12px;
-    background: var(--surface);
+    border: 1px dashed var(--border2); border-radius: var(--radius-sm);
+    padding: 12px; background: var(--bg); transition: border-color 0.15s;
   }
+  .image-upload-box:hover { border-color: var(--accent); }
 
   .upload-label {
-    display: block;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text3);
-    margin-bottom: 8px;
+    display: block; font-family: var(--font-display);
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text3); margin-bottom: 8px;
   }
 
   .image-upload-box input[type="file"] {
-    width: 100%;
-    font-size: 12px;
-    padding: 6px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: var(--surface);
-    cursor: pointer;
-    resize: none;
+    width: 100%; font-size: 12px; padding: 6px;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    background: var(--surface); color: var(--text2); cursor: pointer; resize: none;
   }
 
   .image-preview {
-    width: 100%;
-    max-height: 150px;
-    object-fit: contain;
-    border-radius: 4px;
-    margin-top: 8px;
-    display: none;
-    border: 1px solid var(--border);
+    width: 100%; max-height: 150px; object-fit: contain;
+    border-radius: 4px; margin-top: 8px; display: none; border: 1px solid var(--border);
   }
 
   .generate-example-btn {
-    padding: 7px 14px;
-    font-size: 13px;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 500;
+    padding: 7px 14px; font-size: 11px;
+    font-family: var(--font-display); font-weight: 700;
+    letter-spacing: 0.05em; text-transform: uppercase;
     background: var(--accent-light);
-    border: 1px solid #b8d9c9;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    color: var(--accent);
-    transition: all 0.15s;
-    margin-top: 8px;
+    border: 1px solid rgba(79,142,247,0.3);
+    border-radius: var(--radius-sm); cursor: pointer;
+    color: var(--accent-mid); transition: all 0.15s; margin-top: 8px;
   }
-  .generate-example-btn:hover { background: #d4eade; }
-  .generate-example-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .generate-example-btn:hover { background: rgba(79,142,247,0.18); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 12px var(--accent-light); }
+  .generate-example-btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
 
   .example-output { margin-top: 10px; }
-
   .example-output table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .example-output th { background: var(--accent); color: white; padding: 8px 12px; text-align: left; }
-  .example-output td { padding: 7px 12px; border-bottom: 1px solid var(--border); }
-  .example-output tr:nth-child(even) td { background: #f7f6f2; }
+  .example-output th { background: var(--accent); color: white; padding: 8px 12px; text-align: left; font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .example-output td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--text2); }
+  .example-output tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
 
   .mermaid-preview {
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 16px;
-    overflow: auto;
-    margin-top: 8px;
-    text-align: center;
+    background: var(--surface3); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 16px;
+    overflow: auto; margin-top: 8px; text-align: center;
   }
 
-  /* API key */
   .api-key-section {
-    background: var(--accent-light);
-    border: 1px solid #b8d9c9;
+    background: var(--success-light);
+    border: 1px solid var(--success-border);
     border-radius: var(--radius);
-    padding: 1rem 1.25rem;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    padding: 1rem 1.25rem; margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 12px;
   }
   .api-key-icon { font-size: 20px; flex-shrink: 0; }
-  .api-key-section label { font-size: 13px; font-weight: 500; color: var(--accent); margin-bottom: 4px; }
-  .api-key-section input { border-color: #b8d9c9; background: white; font-family: 'DM Mono', monospace; font-size: 13px; }
-  .api-key-section input:focus { border-color: var(--accent); }
-  .api-key-note { font-size: 11px; color: var(--accent-mid); margin-top: 4px; }
+  .api-key-section label { font-family: var(--font-display); font-size: 11px; font-weight: 700; color: var(--success); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .api-key-section input { border-color: rgba(52,211,153,0.2); background: rgba(0,0,0,0.3); font-family: var(--font-mono); font-size: 13px; color: var(--text); }
+  .api-key-section input:focus { border-color: var(--success); box-shadow: 0 0 0 3px var(--success-light); }
+  .api-key-note { font-size: 11px; color: rgba(52,211,153,0.6); margin-top: 4px; }
 
-  /* Buttons */
   .generate-btn {
-    width: 100%;
-    padding: 13px;
-    font-size: 15px;
-    font-weight: 600;
-    font-family: 'DM Sans', sans-serif;
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: var(--radius);
-    cursor: pointer;
-    letter-spacing: -0.01em;
-    transition: background 0.15s, transform 0.1s;
+    width: 100%; padding: 13px;
+    font-family: var(--font-display); font-size: 14px;
+    font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+    background: var(--accent); color: white; border: none;
+    border-radius: var(--radius); cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(79,142,247,0.25), 0 1px 4px rgba(0,0,0,0.3);
   }
-  .generate-btn:hover { background: var(--accent-mid); }
-  .generate-btn:active { transform: scale(0.99); }
-  .generate-btn:disabled { background: var(--border2); cursor: not-allowed; transform: none; }
+  .generate-btn:hover { background: var(--accent-mid); box-shadow: 0 4px 28px rgba(79,142,247,0.4); transform: translateY(-1px); }
+  .generate-btn:active { transform: translateY(0) scale(0.99); }
+  .generate-btn:disabled { background: var(--surface3); color: var(--text3); cursor: not-allowed; box-shadow: none; transform: none; }
 
-  /* Output */
   .output-section { margin-top: 1.5rem; display: none; }
 
-  .output-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
+  .output-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
 
   .output-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 1rem;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface2);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 1rem; border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
   }
 
-  .output-label {
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--text3);
-  }
+  .output-label { font-family: var(--font-display); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); }
 
   .toolbar-actions { display: flex; gap: 8px; }
 
   .copy-btn {
-    font-size: 13px;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 500;
-    padding: 5px 14px;
-    background: var(--surface);
-    border: 1px solid var(--border2);
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    color: var(--text2);
-    transition: all 0.15s;
+    font-size: 12px; font-family: var(--font-display); font-weight: 600;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 5px 14px; background: transparent;
+    border: 1px solid var(--border2); border-radius: var(--radius-sm);
+    cursor: pointer; color: var(--text3); transition: all 0.15s;
   }
-  .copy-btn:hover { background: var(--accent-light); color: var(--accent); border-color: #b8d9c9; }
+  .copy-btn:hover { background: var(--accent-light); color: var(--accent); border-color: rgba(79,142,247,0.4); }
 
   .download-btn {
-    font-size: 13px;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 500;
-    padding: 5px 14px;
-    background: var(--accent);
-    color: white;
-    border: 1px solid var(--accent);
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: all 0.15s;
+    font-size: 12px; font-family: var(--font-display); font-weight: 700;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 5px 14px; background: var(--accent); color: white;
+    border: 1px solid var(--accent); border-radius: var(--radius-sm);
+    cursor: pointer; transition: all 0.15s;
+    box-shadow: 0 2px 8px rgba(79,142,247,0.2);
   }
-  .download-btn:hover { background: var(--accent-mid); border-color: var(--accent-mid); }
+  .download-btn:hover { background: var(--accent-mid); border-color: var(--accent-mid); box-shadow: 0 2px 16px rgba(79,142,247,0.35); }
+
+  .tech-output .output-card { border-left: 2px solid var(--amber); }
+  .tech-output .output-label { color: var(--amber); }
+  .tech-output .download-btn { background: var(--amber); border-color: var(--amber); box-shadow: 0 2px 8px rgba(245,158,11,0.2); color: #0F1117; font-weight: 800; }
+  .tech-output .download-btn:hover { background: #FBBF24; box-shadow: 0 2px 16px rgba(245,158,11,0.35); }
 
   .output-body { padding: 1.25rem; min-height: 80px; }
-  .output-body pre {
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    color: var(--text);
-    white-space: pre-wrap;
-    line-height: 1.8;
-  }
-
-  .tech-output .output-body pre {
-    font-size: 12px;
-    color: var(--text2);
-  }
+  .output-body pre { font-family: var(--font-mono); font-size: 13px; color: var(--text2); white-space: pre-wrap; line-height: 1.85; }
+  .tech-output .output-body pre { font-size: 12px; }
 
   .status-dot {
-    display: inline-block;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--accent);
-    margin-right: 6px;
+    display: inline-block; width: 7px; height: 7px;
+    border-radius: 50%; background: var(--accent);
+    margin-right: 6px; box-shadow: 0 0 6px var(--accent);
     animation: pulse 1.2s infinite;
   }
 
   @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
   }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
 
   @media (max-width: 580px) {
     .two-col, .image-upload-pair { grid-template-columns: 1fr; }
     main { padding: 1.5rem 1rem 3rem; }
+    .page-title { font-size: 22px; }
   }
 </style>
 </head>
@@ -513,7 +433,6 @@
   <div class="banner banner-success" id="banner-success">✦ Form pre-filled from Claude Code — review the fields below then click Generate.</div>
   <div class="banner banner-error"   id="banner-error">⚠ Could not load session data. You can fill the form manually.</div>
 
-  <!-- API Key -->
   <div class="api-key-section">
     <div class="api-key-icon">🔑</div>
     <div style="flex:1">
@@ -523,7 +442,6 @@
     </div>
   </div>
 
-  <!-- User Story -->
   <div class="card">
     <div class="card-title">User Story</div>
     <div class="field-group">
@@ -550,7 +468,6 @@
     </div>
   </div>
 
-  <!-- Requirements -->
   <div class="card">
     <div class="card-title">Requirements</div>
     <div id="requirements-list">
@@ -562,21 +479,18 @@
     <button class="add-btn" onclick="addReq()">+ add requirement</button>
   </div>
 
-  <!-- Scenarios -->
   <div class="card">
     <div class="card-title">Scenarios for Development</div>
     <div id="scenarios-list"></div>
     <button class="add-btn" onclick="addScenario()">+ add scenario</button>
   </div>
 
-  <!-- Examples -->
   <div class="card">
     <div class="card-title">Examples</div>
     <div id="examples-list"></div>
     <button class="add-btn" onclick="addExample()">+ add example</button>
   </div>
 
-  <!-- Technical Doc — PM Fields -->
   <div class="card card-tech">
     <div class="card-title">Technical Document — PM Fields</div>
     <div class="two-col">
@@ -598,7 +512,6 @@
 
   <button class="generate-btn" id="gen-btn" onclick="generateAll()">Generate BRD + Technical Doc</button>
 
-  <!-- BRD Output -->
   <div class="output-section" id="brd-output-section">
     <div class="output-card">
       <div class="output-toolbar">
@@ -608,13 +521,10 @@
           <button class="download-btn" onclick="downloadBRD()">Download BRD</button>
         </div>
       </div>
-      <div class="output-body">
-        <pre id="brd-output-text"></pre>
-      </div>
+      <div class="output-body"><pre id="brd-output-text"></pre></div>
     </div>
   </div>
 
-  <!-- Technical Doc Output -->
   <div class="output-section tech-output" id="tech-output-section">
     <div class="output-card">
       <div class="output-toolbar">
@@ -623,44 +533,34 @@
           <button class="download-btn" onclick="downloadTechDoc()">Download Technical Doc</button>
         </div>
       </div>
-      <div class="output-body">
-        <pre id="tech-output-text"></pre>
-      </div>
+      <div class="output-body"><pre id="tech-output-text"></pre></div>
     </div>
   </div>
 </main>
 
 <script>
-  mermaid.initialize({ startOnLoad: false, theme: 'neutral' });
+  mermaid.initialize({ startOnLoad: false, theme: 'dark' });
 
   let scenarioCount = 0;
   let exampleCount  = 0;
 
-  // ─── Helpers ──────────────────────────────────────────────────────────────────
-
   function escHtml(str = '') {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
-
   function escAttr(str = '') {
     return String(str).replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   }
-
   function setField(id, value, highlight = true) {
     if (!value) return;
     const el = document.getElementById(id);
     if (el) { el.value = value; if (highlight) el.classList.add('prefilled'); }
   }
-
   function showBanner(name) {
     ['loading','success','error'].forEach(n =>
       document.getElementById(`banner-${n}`).classList.toggle('visible', n === name)
     );
   }
-
   function getApiKey() { return document.getElementById('api-key').value.trim(); }
-
-  // ─── Requirements ─────────────────────────────────────────────────────────────
 
   function addReq(value = '', highlight = false) {
     const list = document.getElementById('requirements-list');
@@ -670,12 +570,9 @@
     if (highlight && value) div.querySelector('input').classList.add('prefilled');
     list.appendChild(div);
   }
-
   function removeReq(btn) {
     if (document.querySelectorAll('.req-row').length > 1) btn.parentElement.remove();
   }
-
-  // ─── Scenarios ────────────────────────────────────────────────────────────────
 
   function addScenario(data = {}, highlight = false) {
     scenarioCount++;
@@ -706,19 +603,15 @@
       </div>`;
     list.appendChild(wrapper.firstElementChild);
   }
-
   function removeScenario(btn) {
     if (document.querySelectorAll('.scenario-block').length > 1)
       btn.closest('.scenario-block').remove();
     renumberScenarios();
   }
-
   function renumberScenarios() {
     document.querySelectorAll('.scenario-num').forEach((el, i) => el.textContent = `Scenario ${i+1}`);
     scenarioCount = document.querySelectorAll('.scenario-block').length;
   }
-
-  // ─── Examples ─────────────────────────────────────────────────────────────────
 
   function addExample() {
     exampleCount++;
@@ -743,8 +636,6 @@
           <div class="example-label">Title / Label</div>
           <input type="text" class="example-title" placeholder="e.g. Invoice line item display — before and after" />
         </div>
-
-        <!-- UI Change -->
         <div class="example-type-area active" data-area="ui">
           <div class="example-label" style="margin-bottom:6px">Before &amp; After Screenshots</div>
           <div class="image-upload-pair">
@@ -764,8 +655,6 @@
             <input type="text" class="ui-caption" placeholder="e.g. New layout shows itemized proration breakdown per line item" />
           </div>
         </div>
-
-        <!-- Data Change -->
         <div class="example-type-area" data-area="data">
           <div class="example-field">
             <div class="example-label">Describe the data change</div>
@@ -774,8 +663,6 @@
           <button class="generate-example-btn" onclick="generateTable(this, '${id}')">Generate with Claude</button>
           <div class="example-output" data-output="data"></div>
         </div>
-
-        <!-- Workflow -->
         <div class="example-type-area" data-area="workflow">
           <div class="example-field">
             <div class="example-label">Describe the workflow in plain English</div>
@@ -787,19 +674,16 @@
       </div>`;
     list.appendChild(wrapper.firstElementChild);
   }
-
   function removeExample(btn) {
     btn.closest('.example-block').remove();
     document.querySelectorAll('.example-num').forEach((el, i) => el.textContent = `Example ${i+1}`);
     exampleCount = document.querySelectorAll('.example-block').length;
   }
-
   function switchExampleType(select, blockId) {
     const block = document.getElementById(blockId);
     block.querySelectorAll('.example-type-area').forEach(a => a.classList.remove('active'));
     block.querySelector(`[data-area="${select.value}"]`).classList.add('active');
   }
-
   function previewImage(input) {
     const img = input.closest('.image-upload-box').querySelector('.image-preview');
     if (input.files && input.files[0]) {
@@ -818,11 +702,7 @@
         'anthropic-version': '2023-06-01',
         'anthropic-dangerous-direct-browser-access': 'true'
       },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: maxTokens,
-        messages: [{ role: 'user', content: prompt }]
-      })
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: maxTokens, messages: [{ role: 'user', content: prompt }] })
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error.message);
@@ -835,22 +715,16 @@
     const block = document.getElementById(blockId);
     const desc = block.querySelector('[data-area="data"] textarea').value.trim();
     if (!desc) { alert('Please describe the data change first.'); return; }
-
-    btn.disabled = true;
-    btn.textContent = 'Generating...';
+    btn.disabled = true; btn.textContent = 'Generating...';
     const output = block.querySelector('[data-output="data"]');
     output.innerHTML = '<em style="font-size:12px;color:var(--text3)">Generating table…</em>';
-
     try {
-      const html = await callClaude(apiKey,
-        `Generate a clean HTML before/after comparison table for this data change in a BillingPlatform BRD: "${desc}". Return ONLY the <table> element with thead/tbody. Use "Before" and "After" as column headers. Make values realistic and specific. No explanation, no markdown.`
-      );
+      const html = await callClaude(apiKey, `Generate a clean HTML before/after comparison table for this data change in a BillingPlatform BRD: "${desc}". Return ONLY the <table> element with thead/tbody. Use "Before" and "After" as column headers. Make values realistic and specific. No explanation, no markdown.`);
       output.innerHTML = html;
     } catch (e) {
       output.innerHTML = `<em style="color:var(--danger);font-size:12px">Error: ${escHtml(e.message)}</em>`;
     }
-    btn.disabled = false;
-    btn.textContent = 'Generate with Claude';
+    btn.disabled = false; btn.textContent = 'Generate with Claude';
   }
 
   async function generateDiagram(btn, blockId) {
@@ -859,18 +733,11 @@
     const block = document.getElementById(blockId);
     const desc = block.querySelector('[data-area="workflow"] textarea').value.trim();
     if (!desc) { alert('Please describe the workflow first.'); return; }
-
-    btn.disabled = true;
-    btn.textContent = 'Generating...';
+    btn.disabled = true; btn.textContent = 'Generating...';
     const output = block.querySelector('[data-output="workflow"]');
     output.innerHTML = '<em style="font-size:12px;color:var(--text3)">Generating diagram…</em>';
-
     try {
-      const code = (await callClaude(apiKey,
-        `Generate a Mermaid.js flowchart for this workflow: "${desc}". Return ONLY the raw Mermaid code starting with "flowchart TD" or "flowchart LR". No explanation, no markdown fences, no backticks.`,
-        600
-      )).trim();
-
+      const code = (await callClaude(apiKey, `Generate a Mermaid.js flowchart for this workflow: "${desc}". Return ONLY the raw Mermaid code starting with "flowchart TD" or "flowchart LR". No explanation, no markdown fences, no backticks.`, 600)).trim();
       const preview = document.createElement('div');
       preview.className = 'mermaid-preview';
       const mermaidDiv = document.createElement('div');
@@ -884,11 +751,8 @@
     } catch (e) {
       output.innerHTML = `<em style="color:var(--danger);font-size:12px">Error: ${escHtml(e.message)}</em>`;
     }
-    btn.disabled = false;
-    btn.textContent = 'Generate with Claude';
+    btn.disabled = false; btn.textContent = 'Generate with Claude';
   }
-
-  // ─── Session loader ───────────────────────────────────────────────────────────
 
   async function loadSession(sessionId) {
     showBanner('loading');
@@ -897,28 +761,23 @@
       if (!res.ok) throw new Error('Not found');
       let data = await res.json();
       if (data.value && typeof data.value === 'string') data = JSON.parse(data.value);
-
-      setField('feature-name',    data.feature);
-      setField('user-role',       data.role);
-      setField('product-area',    data.area);
-      setField('user-need',       data.need);
+      setField('feature-name', data.feature);
+      setField('user-role', data.role);
+      setField('product-area', data.area);
+      setField('user-need', data.need);
       setField('business-reason', data.reason);
-
       if (data.requirements?.length) {
         document.getElementById('requirements-list').innerHTML = '';
         data.requirements.forEach(r => addReq(r, true));
       }
       if (data.scenarios?.length) data.scenarios.forEach(s => addScenario(s, true));
       else addScenario();
-
       showBanner('success');
     } catch {
       showBanner('error');
       addScenario();
     }
   }
-
-  // ─── Copy BRD ─────────────────────────────────────────────────────────────────
 
   function copyBRD() {
     navigator.clipboard.writeText(document.getElementById('brd-output-text').textContent).then(() => {
@@ -928,29 +787,20 @@
     });
   }
 
-  // ─── Collect examples ─────────────────────────────────────────────────────────
-
   function collectExamples() {
     return Array.from(document.querySelectorAll('.example-block')).map(block => {
-      const type    = block.querySelector('select').value;
-      const title   = block.querySelector('.example-title')?.value.trim() || '';
+      const type  = block.querySelector('select').value;
+      const title = block.querySelector('.example-title')?.value.trim() || '';
       if (type === 'ui') {
-        const imgs    = block.querySelectorAll('.image-preview');
+        const imgs = block.querySelectorAll('.image-preview');
         const caption = block.querySelector('.ui-caption')?.value.trim() || '';
-        return { type, title, caption,
-          beforeSrc: imgs[0]?.style.display !== 'none' ? imgs[0]?.src : null,
-          afterSrc:  imgs[1]?.style.display !== 'none' ? imgs[1]?.src : null };
+        return { type, title, caption, beforeSrc: imgs[0]?.style.display !== 'none' ? imgs[0]?.src : null, afterSrc: imgs[1]?.style.display !== 'none' ? imgs[1]?.src : null };
       }
-      if (type === 'data') {
-        return { type, title, html: block.querySelector('[data-output="data"]')?.innerHTML || '' };
-      }
-      // workflow
+      if (type === 'data') return { type, title, html: block.querySelector('[data-output="data"]')?.innerHTML || '' };
       const svg = block.querySelector('.mermaid svg');
       return { type, title, svg: svg ? svg.outerHTML : '' };
     });
   }
-
-  // ─── Generate All ─────────────────────────────────────────────────────────────
 
   async function generateAll() {
     const apiKey         = getApiKey();
@@ -966,9 +816,7 @@
     if (!apiKey)                   { alert('Please enter your Anthropic API key.'); return; }
     if (!featureName || !userNeed) { alert('Please fill in at least the feature name and user need.'); return; }
 
-    const reqs = Array.from(document.querySelectorAll('#requirements-list .req-row input'))
-      .map(i => i.value.trim()).filter(Boolean);
-
+    const reqs = Array.from(document.querySelectorAll('#requirements-list .req-row input')).map(i => i.value.trim()).filter(Boolean);
     const scenarios = Array.from(document.querySelectorAll('.scenario-block')).map(card => ({
       given: card.querySelectorAll('textarea')[0]?.value.trim(),
       when:  card.querySelector('input[type=text]')?.value.trim(),
@@ -977,8 +825,7 @@
     }));
 
     const btn = document.getElementById('gen-btn');
-    btn.disabled = true;
-    btn.textContent = 'Generating...';
+    btn.disabled = true; btn.textContent = 'Generating...';
 
     document.getElementById('brd-output-section').style.display  = 'block';
     document.getElementById('tech-output-section').style.display = 'block';
@@ -986,12 +833,7 @@
     document.getElementById('brd-output-text').textContent  = '';
     document.getElementById('tech-output-text').textContent = '';
 
-    const scenarioText = scenarios.map((s, i) => `
-Scenario ${scenarios.length > 1 ? i+1 : ''}:
-GIVEN: ${s.given}
-WHEN: ${s.when}
-THEN: ${s.then}
-${s.note ? 'NOTE: ' + s.note : ''}`).join('\n');
+    const scenarioText = scenarios.map((s, i) => `\nScenario ${scenarios.length > 1 ? i+1 : ''}:\nGIVEN: ${s.given}\nWHEN: ${s.when}\nTHEN: ${s.then}\n${s.note ? 'NOTE: ' + s.note : ''}`).join('\n');
 
     const prompt = `You are a product manager assistant at BillingPlatform, a SaaS revenue lifecycle management platform. Generate a professional Business Requirements Document (BRD) story in the exact format below. Match the tone and structure precisely — formal but clear, using bullet points for requirements and Given/When/Then for scenarios.
 
@@ -1034,17 +876,9 @@ Generate the complete BRD. Be specific and precise. Do not add any preamble or c
       document.getElementById('brd-output-text').textContent = brdText;
       document.getElementById('brd-output-label').textContent = 'Generated BRD';
 
-      // Build tech doc
       const date    = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
       const reqList = reqs.length ? reqs.map((r,i) => `  ${i+1}. ${r}`).join('\n') : '  (none specified)';
-      const scenList = scenarios.map((s,i) => [
-        `  SCENARIO ${scenarios.length > 1 ? i+1 : ''}`,
-        `  ${'─'.repeat(45)}`,
-        `  GIVEN:  ${s.given || '—'}`,
-        `  WHEN:   ${s.when  || '—'}`,
-        `  THEN:   ${s.then  || '—'}`,
-        s.note ? `  NOTE:   ${s.note}` : ''
-      ].filter(Boolean).join('\n')).join('\n\n');
+      const scenList = scenarios.map((s,i) => [`  SCENARIO ${scenarios.length > 1 ? i+1 : ''}`, `  ${'─'.repeat(45)}`, `  GIVEN:  ${s.given || '—'}`, `  WHEN:   ${s.when || '—'}`, `  THEN:   ${s.then || '—'}`, s.note ? `  NOTE:   ${s.note}` : ''].filter(Boolean).join('\n')).join('\n\n');
 
       document.getElementById('tech-output-text').textContent =
 `TECHNICAL SPECIFICATION
@@ -1099,8 +933,6 @@ ${'═'.repeat(57)}`;
     btn.textContent = 'Generate BRD + Technical Doc';
   }
 
-  // ─── Download BRD ─────────────────────────────────────────────────────────────
-
   function downloadBRD() {
     const featureName = document.getElementById('feature-name').value.trim() || 'BRD';
     const productArea = document.getElementById('product-area').value.trim();
@@ -1113,100 +945,28 @@ ${'═'.repeat(57)}`;
       const items = examples.map((ex, i) => {
         let content = '';
         if (ex.type === 'ui') {
-          const imgs = (ex.beforeSrc || ex.afterSrc)
-            ? `<div class="img-pair">
-                ${ex.beforeSrc ? `<div class="img-box"><div class="img-label">Before</div><img src="${ex.beforeSrc}" /></div>` : ''}
-                ${ex.afterSrc  ? `<div class="img-box"><div class="img-label">After</div><img src="${ex.afterSrc}" /></div>`  : ''}
-               </div>`
-            : '<p class="empty">No images uploaded.</p>';
+          const imgs = (ex.beforeSrc || ex.afterSrc) ? `<div class="img-pair">${ex.beforeSrc ? `<div class="img-box"><div class="img-label">Before</div><img src="${ex.beforeSrc}" /></div>` : ''}${ex.afterSrc ? `<div class="img-box"><div class="img-label">After</div><img src="${ex.afterSrc}" /></div>` : ''}</div>` : '<p class="empty">No images uploaded.</p>';
           content = imgs + (ex.caption ? `<p class="caption">${escHtml(ex.caption)}</p>` : '');
         } else if (ex.type === 'data') {
           content = ex.html || '<p class="empty">No table generated.</p>';
         } else {
-          content = ex.svg
-            ? `<div class="diagram">${ex.svg}</div>`
-            : '<p class="empty">No diagram generated.</p>';
+          content = ex.svg ? `<div class="diagram">${ex.svg}</div>` : '<p class="empty">No diagram generated.</p>';
         }
         return `<div class="ex-card"><h3>Example ${i+1}${ex.title ? ': ' + escHtml(ex.title) : ''}</h3>${content}</div>`;
       }).join('');
-
       examplesHtml = `<div class="section"><h2>Examples</h2>${items}</div>`;
     }
 
-    const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<title>BRD — ${escHtml(featureName)}</title>
-<style>
-  body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 820px; margin: 0 auto; padding: 40px 32px; color: #1a1916; line-height: 1.7; }
-  .doc-header { border-bottom: 2px solid #2a5c45; padding-bottom: 20px; margin-bottom: 32px; display: flex; justify-content: space-between; align-items: flex-end; }
-  .brand { font-size: 12px; font-weight: 700; color: #2a5c45; letter-spacing: 0.06em; text-transform: uppercase; }
-  .doc-type { font-size: 11px; color: #9e9a94; letter-spacing: 0.04em; text-transform: uppercase; margin-top: 3px; }
-  h1 { font-size: 22px; font-weight: 700; margin: 14px 0 0; letter-spacing: -0.02em; }
-  .meta { font-size: 13px; color: #6b6760; text-align: right; }
-  .section { margin-bottom: 32px; }
-  h2 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #9e9a94; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid #e2ddd6; }
-  pre { font-family: 'Segoe UI', Arial, sans-serif; white-space: pre-wrap; font-size: 14px; line-height: 1.8; }
-  .ex-card { background: #f7f6f2; border: 1px solid #e2ddd6; border-radius: 8px; padding: 20px; margin-bottom: 16px; }
-  .ex-card h3 { font-size: 14px; font-weight: 600; color: #2a5c45; margin-bottom: 14px; }
-  .img-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .img-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9e9a94; margin-bottom: 6px; }
-  .img-box img { width: 100%; border-radius: 4px; border: 1px solid #e2ddd6; }
-  .caption { font-size: 13px; color: #6b6760; margin-top: 10px; font-style: italic; }
-  .empty { font-size: 13px; color: #9e9a94; font-style: italic; }
-  .diagram { text-align: center; }
-  .diagram svg { max-width: 100%; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th { background: #2a5c45; color: white; padding: 8px 12px; text-align: left; }
-  td { padding: 7px 12px; border-bottom: 1px solid #e2ddd6; }
-  tr:nth-child(even) td { background: #f0ede6; }
-</style>
-</head>
-<body>
-  <div class="doc-header">
-    <div>
-      <div class="brand">BillingPlatform</div>
-      <div class="doc-type">Business Requirements Document</div>
-      <h1>${escHtml(featureName)}</h1>
-    </div>
-    <div class="meta">
-      ${escHtml(date)}<br/>
-      ${productArea ? escHtml(productArea) : ''}
-    </div>
-  </div>
-  <div class="section">
-    <h2>Requirements Document</h2>
-    <pre>${escHtml(brdContent)}</pre>
-  </div>
-  ${examplesHtml}
-</body>
-</html>`;
+    const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><title>BRD — ${escHtml(featureName)}</title><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet"/><style>body{font-family:'DM Sans',sans-serif;max-width:820px;margin:0 auto;padding:40px 32px;color:#1a1916;line-height:1.7;background:#fff}.doc-header{border-bottom:2px solid #4F8EF7;padding-bottom:20px;margin-bottom:32px;display:flex;justify-content:space-between;align-items:flex-end}.brand{font-family:'Syne',sans-serif;font-size:12px;font-weight:800;color:#4F8EF7;letter-spacing:.1em;text-transform:uppercase}.doc-type{font-size:11px;color:#9e9a94;letter-spacing:.06em;text-transform:uppercase;margin-top:3px;font-family:'Syne',sans-serif}h1{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin:14px 0 0;letter-spacing:-.02em}.meta{font-size:13px;color:#6b6760;text-align:right}.section{margin-bottom:32px}h2{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9e9a94;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid #e2ddd6}pre{font-family:'DM Sans',sans-serif;white-space:pre-wrap;font-size:14px;line-height:1.8}.ex-card{background:#f7f6f2;border:1px solid #e2ddd6;border-radius:8px;padding:20px;margin-bottom:16px}.ex-card h3{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#4F8EF7;margin-bottom:14px}.img-pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}.img-label{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9e9a94;margin-bottom:6px}.img-box img{width:100%;border-radius:4px;border:1px solid #e2ddd6}.caption{font-size:13px;color:#6b6760;margin-top:10px;font-style:italic}.empty{font-size:13px;color:#9e9a94;font-style:italic}.diagram{text-align:center}.diagram svg{max-width:100%}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#4F8EF7;color:white;padding:8px 12px;text-align:left;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}td{padding:7px 12px;border-bottom:1px solid #e2ddd6}tr:nth-child(even) td{background:#f7f6f2}</style></head><body><div class="doc-header"><div><div class="brand">BillingPlatform</div><div class="doc-type">Business Requirements Document</div><h1>${escHtml(featureName)}</h1></div><div class="meta">${escHtml(date)}<br/>${productArea ? escHtml(productArea) : ''}</div></div><div class="section"><h2>Requirements Document</h2><pre>${escHtml(brdContent)}</pre></div>${examplesHtml}</body></html>`;
 
     triggerDownload(html, `BRD_${featureName.replace(/[^a-zA-Z0-9]/g,'_')}_${today()}.html`);
   }
 
-  // ─── Download Tech Doc ────────────────────────────────────────────────────────
-
   function downloadTechDoc() {
     const featureName = document.getElementById('feature-name').value.trim() || 'Feature';
     const content     = document.getElementById('tech-output-text').textContent;
-    const escaped     = escHtml(content);
-    const highlighted = escaped.replace(/\[ TO BE FILLED \]/g, '<span style="color:#c0392b;font-style:italic">[ TO BE FILLED ]</span>');
-
-    const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<title>Tech Spec — ${escHtml(featureName)}</title>
-<style>
-  body { font-family: 'Courier New', Courier, monospace; max-width: 820px; margin: 0 auto; padding: 40px 32px; color: #1a1916; background: #fafaf8; }
-  pre { white-space: pre-wrap; font-size: 13px; line-height: 1.85; font-family: inherit; }
-</style>
-</head>
-<body><pre>${highlighted}</pre></body>
-</html>`;
-
+    const highlighted = escHtml(content).replace(/\[ TO BE FILLED \]/g, '<span style="color:#c0392b;font-weight:600">[ TO BE FILLED ]</span>');
+    const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><title>Tech Spec — ${escHtml(featureName)}</title><style>body{font-family:'Courier New',monospace;max-width:820px;margin:0 auto;padding:40px 32px;color:#1a1916;background:#fafaf8}pre{white-space:pre-wrap;font-size:13px;line-height:1.85;font-family:inherit}</style></head><body><pre>${highlighted}</pre></body></html>`;
     triggerDownload(html, `TechSpec_${featureName.replace(/[^a-zA-Z0-9]/g,'_')}_${today()}.html`);
   }
 
@@ -1218,11 +978,7 @@ ${'═'.repeat(57)}`;
     URL.revokeObjectURL(url);
   }
 
-  function today() {
-    return new Date().toISOString().slice(0,10);
-  }
-
-  // ─── Init ─────────────────────────────────────────────────────────────────────
+  function today() { return new Date().toISOString().slice(0,10); }
 
   const sessionId = new URLSearchParams(window.location.search).get('session');
   if (sessionId) loadSession(sessionId);
