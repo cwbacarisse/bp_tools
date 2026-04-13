@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>BRD Generator — BillingPlatform</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <style>
   :root {
     --bg: #f7f6f2;
@@ -30,7 +31,6 @@
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
-    padding: 0;
   }
 
   header {
@@ -101,26 +101,10 @@
     gap: 8px;
     display: none;
   }
-
   .banner.visible { display: flex; }
-
-  .banner-success {
-    background: var(--accent-light);
-    border: 1px solid #b8d9c9;
-    color: var(--accent);
-  }
-
-  .banner-loading {
-    background: #f5f5f0;
-    border: 1px solid var(--border2);
-    color: var(--text2);
-  }
-
-  .banner-error {
-    background: #fdf0ee;
-    border: 1px solid #f5c0ba;
-    color: var(--danger);
-  }
+  .banner-success { background: var(--accent-light); border: 1px solid #b8d9c9; color: var(--accent); }
+  .banner-loading { background: #f5f5f0; border: 1px solid var(--border2); color: var(--text2); }
+  .banner-error   { background: #fdf0ee; border: 1px solid #f5c0ba; color: var(--danger); }
 
   .card {
     background: var(--surface);
@@ -128,6 +112,10 @@
     border-radius: var(--radius);
     padding: 1.5rem;
     margin-bottom: 1rem;
+  }
+
+  .card-tech {
+    border-left: 3px solid var(--border2);
   }
 
   .card-title {
@@ -141,6 +129,13 @@
     border-bottom: 1px solid var(--border);
   }
 
+  .card-note {
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 10px;
+    font-style: italic;
+  }
+
   .field-group { margin-bottom: 1rem; }
   .field-group:last-child { margin-bottom: 0; }
 
@@ -152,7 +147,7 @@
     margin-bottom: 5px;
   }
 
-  input[type="text"], textarea {
+  input[type="text"], textarea, select {
     width: 100%;
     background: var(--surface);
     border: 1px solid var(--border);
@@ -165,17 +160,15 @@
     resize: vertical;
   }
 
-  input[type="text"]:focus, textarea:focus {
+  select { resize: none; cursor: pointer; }
+
+  input[type="text"]:focus, textarea:focus, select:focus {
     outline: none;
     border-color: var(--accent-mid);
-    box-shadow: 0 0 0 3px rgba(42, 92, 69, 0.08);
+    box-shadow: 0 0 0 3px rgba(42,92,69,0.08);
   }
 
-  .prefilled {
-    border-color: #b8d9c9 !important;
-    background: #f4faf7 !important;
-  }
-
+  .prefilled { border-color: #b8d9c9 !important; background: #f4faf7 !important; }
   ::placeholder { color: var(--text3); }
 
   .two-col {
@@ -190,7 +183,6 @@
     margin-bottom: 8px;
     align-items: center;
   }
-
   .req-row input { flex: 1; }
 
   .icon-btn {
@@ -205,7 +197,6 @@
     transition: color 0.15s, background 0.15s;
     flex-shrink: 0;
   }
-
   .icon-btn:hover { color: var(--danger); background: #fdf0ee; }
 
   .add-btn {
@@ -221,20 +212,15 @@
     margin-top: 4px;
     transition: all 0.15s;
   }
+  .add-btn:hover { background: var(--surface2); color: var(--text); }
 
-  .add-btn:hover {
-    background: var(--surface2);
-    color: var(--text);
-    border-color: var(--border2);
-  }
-
+  /* Scenario blocks */
   .scenario-block {
     background: var(--surface2);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 1.25rem;
     margin-bottom: 10px;
-    position: relative;
   }
 
   .scenario-header {
@@ -252,7 +238,7 @@
     color: var(--accent);
   }
 
-  .remove-scenario-btn {
+  .remove-scenario-btn, .remove-example-btn {
     font-size: 12px;
     color: var(--text3);
     background: none;
@@ -262,13 +248,12 @@
     border-radius: 4px;
     transition: all 0.15s;
   }
+  .remove-scenario-btn:hover, .remove-example-btn:hover { color: var(--danger); background: #fdf0ee; }
 
-  .remove-scenario-btn:hover { color: var(--danger); background: #fdf0ee; }
+  .scenario-field, .example-field { margin-bottom: 10px; }
+  .scenario-field:last-child, .example-field:last-child { margin-bottom: 0; }
 
-  .scenario-field { margin-bottom: 10px; }
-  .scenario-field:last-child { margin-bottom: 0; }
-
-  .scenario-label {
+  .scenario-label, .example-label {
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
@@ -277,6 +262,112 @@
     margin-bottom: 5px;
   }
 
+  /* Example blocks */
+  .example-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 10px;
+  }
+
+  .example-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .example-num {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+  }
+
+  .example-type-area { display: none; }
+  .example-type-area.active { display: block; }
+
+  .image-upload-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .image-upload-box {
+    border: 1px dashed var(--border2);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    background: var(--surface);
+  }
+
+  .upload-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text3);
+    margin-bottom: 8px;
+  }
+
+  .image-upload-box input[type="file"] {
+    width: 100%;
+    font-size: 12px;
+    padding: 6px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    cursor: pointer;
+    resize: none;
+  }
+
+  .image-preview {
+    width: 100%;
+    max-height: 150px;
+    object-fit: contain;
+    border-radius: 4px;
+    margin-top: 8px;
+    display: none;
+    border: 1px solid var(--border);
+  }
+
+  .generate-example-btn {
+    padding: 7px 14px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    background: var(--accent-light);
+    border: 1px solid #b8d9c9;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--accent);
+    transition: all 0.15s;
+    margin-top: 8px;
+  }
+  .generate-example-btn:hover { background: #d4eade; }
+  .generate-example-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .example-output { margin-top: 10px; }
+
+  .example-output table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .example-output th { background: var(--accent); color: white; padding: 8px 12px; text-align: left; }
+  .example-output td { padding: 7px 12px; border-bottom: 1px solid var(--border); }
+  .example-output tr:nth-child(even) td { background: #f7f6f2; }
+
+  .mermaid-preview {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    overflow: auto;
+    margin-top: 8px;
+    text-align: center;
+  }
+
+  /* API key */
   .api-key-section {
     background: var(--accent-light);
     border: 1px solid #b8d9c9;
@@ -287,31 +378,13 @@
     align-items: center;
     gap: 12px;
   }
-
   .api-key-icon { font-size: 20px; flex-shrink: 0; }
-
-  .api-key-section label {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--accent);
-    margin-bottom: 4px;
-  }
-
-  .api-key-section input {
-    border-color: #b8d9c9;
-    background: white;
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-  }
-
+  .api-key-section label { font-size: 13px; font-weight: 500; color: var(--accent); margin-bottom: 4px; }
+  .api-key-section input { border-color: #b8d9c9; background: white; font-family: 'DM Mono', monospace; font-size: 13px; }
   .api-key-section input:focus { border-color: var(--accent); }
+  .api-key-note { font-size: 11px; color: var(--accent-mid); margin-top: 4px; }
 
-  .api-key-note {
-    font-size: 11px;
-    color: var(--accent-mid);
-    margin-top: 4px;
-  }
-
+  /* Buttons */
   .generate-btn {
     width: 100%;
     padding: 13px;
@@ -326,11 +399,11 @@
     letter-spacing: -0.01em;
     transition: background 0.15s, transform 0.1s;
   }
-
   .generate-btn:hover { background: var(--accent-mid); }
   .generate-btn:active { transform: scale(0.99); }
   .generate-btn:disabled { background: var(--border2); cursor: not-allowed; transform: none; }
 
+  /* Output */
   .output-section { margin-top: 1.5rem; display: none; }
 
   .output-card {
@@ -357,6 +430,8 @@
     color: var(--text3);
   }
 
+  .toolbar-actions { display: flex; gap: 8px; }
+
   .copy-btn {
     font-size: 13px;
     font-family: 'DM Sans', sans-serif;
@@ -369,17 +444,34 @@
     color: var(--text2);
     transition: all 0.15s;
   }
-
   .copy-btn:hover { background: var(--accent-light); color: var(--accent); border-color: #b8d9c9; }
 
-  .output-body { padding: 1.25rem; min-height: 80px; }
+  .download-btn {
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    padding: 5px 14px;
+    background: var(--accent);
+    color: white;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .download-btn:hover { background: var(--accent-mid); border-color: var(--accent-mid); }
 
+  .output-body { padding: 1.25rem; min-height: 80px; }
   .output-body pre {
     font-family: 'DM Mono', monospace;
     font-size: 13px;
     color: var(--text);
     white-space: pre-wrap;
     line-height: 1.8;
+  }
+
+  .tech-output .output-body pre {
+    font-size: 12px;
+    color: var(--text2);
   }
 
   .status-dot {
@@ -398,7 +490,7 @@
   }
 
   @media (max-width: 580px) {
-    .two-col { grid-template-columns: 1fr; }
+    .two-col, .image-upload-pair { grid-template-columns: 1fr; }
     main { padding: 1.5rem 1rem 3rem; }
   }
 </style>
@@ -415,17 +507,11 @@
 
 <main>
   <h1 class="page-title">BRD Generator</h1>
-  <p class="page-subtitle">Fill in the details below to generate a formatted Business Requirements Document.</p>
+  <p class="page-subtitle">Fill in the details below to generate a Business Requirements Document and Technical Specification.</p>
 
-  <div class="banner banner-loading" id="banner-loading">
-    ⏳ Loading session data…
-  </div>
-  <div class="banner banner-success" id="banner-success">
-    ✦ Form pre-filled from Claude Code — review the fields below then click Generate.
-  </div>
-  <div class="banner banner-error" id="banner-error">
-    ⚠ Could not load session data. You can fill the form manually.
-  </div>
+  <div class="banner banner-loading" id="banner-loading">⏳ Loading session data…</div>
+  <div class="banner banner-success" id="banner-success">✦ Form pre-filled from Claude Code — review the fields below then click Generate.</div>
+  <div class="banner banner-error"   id="banner-error">⚠ Could not load session data. You can fill the form manually.</div>
 
   <!-- API Key -->
   <div class="api-key-section">
@@ -433,7 +519,7 @@
     <div style="flex:1">
       <label for="api-key">Anthropic API Key</label>
       <input type="password" id="api-key" placeholder="sk-ant-..." />
-      <div class="api-key-note">Your key is never stored or sent anywhere except the Anthropic API. Get yours at console.anthropic.com</div>
+      <div class="api-key-note">Your key is never stored or sent anywhere except the Anthropic API.</div>
     </div>
   </div>
 
@@ -483,25 +569,74 @@
     <button class="add-btn" onclick="addScenario()">+ add scenario</button>
   </div>
 
-  <button class="generate-btn" id="gen-btn" onclick="generateBRD()">Generate BRD</button>
+  <!-- Examples -->
+  <div class="card">
+    <div class="card-title">Examples</div>
+    <div id="examples-list"></div>
+    <button class="add-btn" onclick="addExample()">+ add example</button>
+  </div>
 
-  <div class="output-section" id="output-section">
+  <!-- Technical Doc — PM Fields -->
+  <div class="card card-tech">
+    <div class="card-title">Technical Document — PM Fields</div>
+    <div class="two-col">
+      <div class="field-group">
+        <label>Jira Ticket</label>
+        <input type="text" id="jira-ticket" placeholder="e.g. BP-123" />
+      </div>
+      <div class="field-group">
+        <label>Affected System / Component <span style="font-weight:400;color:var(--text3)">(optional)</span></label>
+        <input type="text" id="affected-system" placeholder="e.g. payout-service, metrics" />
+      </div>
+    </div>
+    <div class="field-group">
+      <label>Notes for Developer <span style="font-weight:400;color:var(--text3)">(optional)</span></label>
+      <textarea id="dev-notes" rows="2" placeholder="e.g. Coordinate with billing team before deploying. This touches the proration engine."></textarea>
+    </div>
+    <div class="card-note">The developer section (repo, branch, PR links, files changed) will appear as labeled placeholders in the downloaded Technical Doc for your dev team to complete.</div>
+  </div>
+
+  <button class="generate-btn" id="gen-btn" onclick="generateAll()">Generate BRD + Technical Doc</button>
+
+  <!-- BRD Output -->
+  <div class="output-section" id="brd-output-section">
     <div class="output-card">
       <div class="output-toolbar">
-        <span class="output-label" id="output-label">Generated BRD</span>
-        <button class="copy-btn" onclick="copyOutput()">Copy to clipboard</button>
+        <span class="output-label" id="brd-output-label">Generated BRD</span>
+        <div class="toolbar-actions">
+          <button class="copy-btn" onclick="copyBRD()">Copy</button>
+          <button class="download-btn" onclick="downloadBRD()">Download BRD</button>
+        </div>
       </div>
       <div class="output-body">
-        <pre id="output-text"></pre>
+        <pre id="brd-output-text"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Technical Doc Output -->
+  <div class="output-section tech-output" id="tech-output-section">
+    <div class="output-card">
+      <div class="output-toolbar">
+        <span class="output-label" id="tech-output-label">Technical Specification</span>
+        <div class="toolbar-actions">
+          <button class="download-btn" onclick="downloadTechDoc()">Download Technical Doc</button>
+        </div>
+      </div>
+      <div class="output-body">
+        <pre id="tech-output-text"></pre>
       </div>
     </div>
   </div>
 </main>
 
 <script>
-  let scenarioCount = 0;
+  mermaid.initialize({ startOnLoad: false, theme: 'neutral' });
 
-  // ─── Helpers ─────────────────────────────────────────────────────────────────
+  let scenarioCount = 0;
+  let exampleCount  = 0;
+
+  // ─── Helpers ──────────────────────────────────────────────────────────────────
 
   function escHtml(str = '') {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -514,17 +649,16 @@
   function setField(id, value, highlight = true) {
     if (!value) return;
     const el = document.getElementById(id);
-    if (el) {
-      el.value = value;
-      if (highlight) el.classList.add('prefilled');
-    }
+    if (el) { el.value = value; if (highlight) el.classList.add('prefilled'); }
   }
 
   function showBanner(name) {
-    ['loading','success','error'].forEach(n => {
-      document.getElementById(`banner-${n}`).classList.toggle('visible', n === name);
-    });
+    ['loading','success','error'].forEach(n =>
+      document.getElementById(`banner-${n}`).classList.toggle('visible', n === name)
+    );
   }
+
+  function getApiKey() { return document.getElementById('api-key').value.trim(); }
 
   // ─── Requirements ─────────────────────────────────────────────────────────────
 
@@ -538,11 +672,10 @@
   }
 
   function removeReq(btn) {
-    const rows = document.querySelectorAll('.req-row');
-    if (rows.length > 1) btn.parentElement.remove();
+    if (document.querySelectorAll('.req-row').length > 1) btn.parentElement.remove();
   }
 
-  // ─── Scenarios ───────────────────────────────────────────────────────────────
+  // ─── Scenarios ────────────────────────────────────────────────────────────────
 
   function addScenario(data = {}, highlight = false) {
     scenarioCount++;
@@ -581,72 +714,254 @@
   }
 
   function renumberScenarios() {
-    document.querySelectorAll('.scenario-num').forEach((el, i) => {
-      el.textContent = `Scenario ${i + 1}`;
-    });
+    document.querySelectorAll('.scenario-num').forEach((el, i) => el.textContent = `Scenario ${i+1}`);
     scenarioCount = document.querySelectorAll('.scenario-block').length;
+  }
+
+  // ─── Examples ─────────────────────────────────────────────────────────────────
+
+  function addExample() {
+    exampleCount++;
+    const id = `ex-${exampleCount}`;
+    const list = document.getElementById('examples-list');
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = `
+      <div class="example-block" id="${id}">
+        <div class="example-header">
+          <span class="example-num">Example ${exampleCount}</span>
+          <button class="remove-example-btn" onclick="removeExample(this)">remove</button>
+        </div>
+        <div class="example-field">
+          <div class="example-label">Type</div>
+          <select onchange="switchExampleType(this, '${id}')">
+            <option value="ui">UI Change</option>
+            <option value="data">Data Change</option>
+            <option value="workflow">Workflow</option>
+          </select>
+        </div>
+        <div class="example-field">
+          <div class="example-label">Title / Label</div>
+          <input type="text" class="example-title" placeholder="e.g. Invoice line item display — before and after" />
+        </div>
+
+        <!-- UI Change -->
+        <div class="example-type-area active" data-area="ui">
+          <div class="example-label" style="margin-bottom:6px">Before &amp; After Screenshots</div>
+          <div class="image-upload-pair">
+            <div class="image-upload-box">
+              <span class="upload-label">Before</span>
+              <input type="file" accept="image/*" onchange="previewImage(this)" />
+              <img class="image-preview" alt="Before" />
+            </div>
+            <div class="image-upload-box">
+              <span class="upload-label">After</span>
+              <input type="file" accept="image/*" onchange="previewImage(this)" />
+              <img class="image-preview" alt="After" />
+            </div>
+          </div>
+          <div class="example-field" style="margin-top:10px">
+            <div class="example-label">Caption (optional)</div>
+            <input type="text" class="ui-caption" placeholder="e.g. New layout shows itemized proration breakdown per line item" />
+          </div>
+        </div>
+
+        <!-- Data Change -->
+        <div class="example-type-area" data-area="data">
+          <div class="example-field">
+            <div class="example-label">Describe the data change</div>
+            <textarea rows="3" placeholder="e.g. Show a $120/month subscription upgraded on day 15 of a 30-day month — before it billed the full month, after it prorates to daily rate."></textarea>
+          </div>
+          <button class="generate-example-btn" onclick="generateTable(this, '${id}')">Generate with Claude</button>
+          <div class="example-output" data-output="data"></div>
+        </div>
+
+        <!-- Workflow -->
+        <div class="example-type-area" data-area="workflow">
+          <div class="example-field">
+            <div class="example-label">Describe the workflow in plain English</div>
+            <textarea rows="3" placeholder="e.g. User selects proration method on subscription → system calculates daily rate → generates invoice line items → routes to billing queue → invoice issued to customer"></textarea>
+          </div>
+          <button class="generate-example-btn" onclick="generateDiagram(this, '${id}')">Generate with Claude</button>
+          <div class="example-output" data-output="workflow"></div>
+        </div>
+      </div>`;
+    list.appendChild(wrapper.firstElementChild);
+  }
+
+  function removeExample(btn) {
+    btn.closest('.example-block').remove();
+    document.querySelectorAll('.example-num').forEach((el, i) => el.textContent = `Example ${i+1}`);
+    exampleCount = document.querySelectorAll('.example-block').length;
+  }
+
+  function switchExampleType(select, blockId) {
+    const block = document.getElementById(blockId);
+    block.querySelectorAll('.example-type-area').forEach(a => a.classList.remove('active'));
+    block.querySelector(`[data-area="${select.value}"]`).classList.add('active');
+  }
+
+  function previewImage(input) {
+    const img = input.closest('.image-upload-box').querySelector('.image-preview');
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = e => { img.src = e.target.result; img.style.display = 'block'; };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  async function callClaude(apiKey, prompt, maxTokens = 800) {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: maxTokens,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    return data.content?.map(b => b.text || '').join('') || '';
+  }
+
+  async function generateTable(btn, blockId) {
+    const apiKey = getApiKey();
+    if (!apiKey) { alert('Please enter your Anthropic API key first.'); return; }
+    const block = document.getElementById(blockId);
+    const desc = block.querySelector('[data-area="data"] textarea').value.trim();
+    if (!desc) { alert('Please describe the data change first.'); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Generating...';
+    const output = block.querySelector('[data-output="data"]');
+    output.innerHTML = '<em style="font-size:12px;color:var(--text3)">Generating table…</em>';
+
+    try {
+      const html = await callClaude(apiKey,
+        `Generate a clean HTML before/after comparison table for this data change in a BillingPlatform BRD: "${desc}". Return ONLY the <table> element with thead/tbody. Use "Before" and "After" as column headers. Make values realistic and specific. No explanation, no markdown.`
+      );
+      output.innerHTML = html;
+    } catch (e) {
+      output.innerHTML = `<em style="color:var(--danger);font-size:12px">Error: ${escHtml(e.message)}</em>`;
+    }
+    btn.disabled = false;
+    btn.textContent = 'Generate with Claude';
+  }
+
+  async function generateDiagram(btn, blockId) {
+    const apiKey = getApiKey();
+    if (!apiKey) { alert('Please enter your Anthropic API key first.'); return; }
+    const block = document.getElementById(blockId);
+    const desc = block.querySelector('[data-area="workflow"] textarea').value.trim();
+    if (!desc) { alert('Please describe the workflow first.'); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Generating...';
+    const output = block.querySelector('[data-output="workflow"]');
+    output.innerHTML = '<em style="font-size:12px;color:var(--text3)">Generating diagram…</em>';
+
+    try {
+      const code = (await callClaude(apiKey,
+        `Generate a Mermaid.js flowchart for this workflow: "${desc}". Return ONLY the raw Mermaid code starting with "flowchart TD" or "flowchart LR". No explanation, no markdown fences, no backticks.`,
+        600
+      )).trim();
+
+      const preview = document.createElement('div');
+      preview.className = 'mermaid-preview';
+      const mermaidDiv = document.createElement('div');
+      mermaidDiv.className = 'mermaid';
+      mermaidDiv.textContent = code;
+      mermaidDiv.dataset.code = code;
+      preview.appendChild(mermaidDiv);
+      output.innerHTML = '';
+      output.appendChild(preview);
+      await mermaid.run({ nodes: [mermaidDiv] });
+    } catch (e) {
+      output.innerHTML = `<em style="color:var(--danger);font-size:12px">Error: ${escHtml(e.message)}</em>`;
+    }
+    btn.disabled = false;
+    btn.textContent = 'Generate with Claude';
   }
 
   // ─── Session loader ───────────────────────────────────────────────────────────
 
-async function loadSession(sessionId) {
+  async function loadSession(sessionId) {
     showBanner('loading');
     try {
       const res = await fetch(`/api/session-read?id=${sessionId}`);
       if (!res.ok) throw new Error('Not found');
       let data = await res.json();
-      // Unwrap Upstash envelope if present
-      if (data.value && typeof data.value === 'string') {
-        data = JSON.parse(data.value);
-      }
+      if (data.value && typeof data.value === 'string') data = JSON.parse(data.value);
 
-      // Populate fields
-      setField('feature-name',   data.feature);
-      setField('user-role',      data.role);
-      setField('product-area',   data.area);
-      setField('user-need',      data.need);
-      setField('business-reason',data.reason);
+      setField('feature-name',    data.feature);
+      setField('user-role',       data.role);
+      setField('product-area',    data.area);
+      setField('user-need',       data.need);
+      setField('business-reason', data.reason);
 
-      // Requirements
       if (data.requirements?.length) {
         document.getElementById('requirements-list').innerHTML = '';
         data.requirements.forEach(r => addReq(r, true));
       }
-
-      // Scenarios
-      if (data.scenarios?.length) {
-        data.scenarios.forEach(s => addScenario(s, true));
-      } else {
-        addScenario();
-      }
+      if (data.scenarios?.length) data.scenarios.forEach(s => addScenario(s, true));
+      else addScenario();
 
       showBanner('success');
-    } catch (err) {
+    } catch {
       showBanner('error');
-      addScenario(); // ensure at least one blank scenario
+      addScenario();
     }
   }
 
-  // ─── Copy output ─────────────────────────────────────────────────────────────
+  // ─── Copy BRD ─────────────────────────────────────────────────────────────────
 
-  function copyOutput() {
-    const text = document.getElementById('output-text').textContent;
-    navigator.clipboard.writeText(text).then(() => {
+  function copyBRD() {
+    navigator.clipboard.writeText(document.getElementById('brd-output-text').textContent).then(() => {
       const btn = document.querySelector('.copy-btn');
       btn.textContent = 'Copied!';
-      setTimeout(() => btn.textContent = 'Copy to clipboard', 2000);
+      setTimeout(() => btn.textContent = 'Copy', 2000);
     });
   }
 
-  // ─── Generate BRD ────────────────────────────────────────────────────────────
+  // ─── Collect examples ─────────────────────────────────────────────────────────
 
-  async function generateBRD() {
-    const apiKey         = document.getElementById('api-key').value.trim();
+  function collectExamples() {
+    return Array.from(document.querySelectorAll('.example-block')).map(block => {
+      const type    = block.querySelector('select').value;
+      const title   = block.querySelector('.example-title')?.value.trim() || '';
+      if (type === 'ui') {
+        const imgs    = block.querySelectorAll('.image-preview');
+        const caption = block.querySelector('.ui-caption')?.value.trim() || '';
+        return { type, title, caption,
+          beforeSrc: imgs[0]?.style.display !== 'none' ? imgs[0]?.src : null,
+          afterSrc:  imgs[1]?.style.display !== 'none' ? imgs[1]?.src : null };
+      }
+      if (type === 'data') {
+        return { type, title, html: block.querySelector('[data-output="data"]')?.innerHTML || '' };
+      }
+      // workflow
+      const svg = block.querySelector('.mermaid svg');
+      return { type, title, svg: svg ? svg.outerHTML : '' };
+    });
+  }
+
+  // ─── Generate All ─────────────────────────────────────────────────────────────
+
+  async function generateAll() {
+    const apiKey         = getApiKey();
     const featureName    = document.getElementById('feature-name').value.trim();
     const userRole       = document.getElementById('user-role').value.trim() || 'a user';
     const productArea    = document.getElementById('product-area').value.trim();
     const userNeed       = document.getElementById('user-need').value.trim();
     const businessReason = document.getElementById('business-reason').value.trim();
+    const jiraTicket     = document.getElementById('jira-ticket').value.trim();
+    const affectedSystem = document.getElementById('affected-system').value.trim();
+    const devNotes       = document.getElementById('dev-notes').value.trim();
 
     if (!apiKey)                   { alert('Please enter your Anthropic API key.'); return; }
     if (!featureName || !userNeed) { alert('Please fill in at least the feature name and user need.'); return; }
@@ -665,15 +980,14 @@ async function loadSession(sessionId) {
     btn.disabled = true;
     btn.textContent = 'Generating...';
 
-    const outputSection = document.getElementById('output-section');
-    const outputText    = document.getElementById('output-text');
-    const outputLabel   = document.getElementById('output-label');
-    outputSection.style.display = 'block';
-    outputLabel.innerHTML = '<span class="status-dot"></span> Generating...';
-    outputText.textContent = '';
+    document.getElementById('brd-output-section').style.display  = 'block';
+    document.getElementById('tech-output-section').style.display = 'block';
+    document.getElementById('brd-output-label').innerHTML = '<span class="status-dot"></span> Generating...';
+    document.getElementById('brd-output-text').textContent  = '';
+    document.getElementById('tech-output-text').textContent = '';
 
     const scenarioText = scenarios.map((s, i) => `
-Scenario ${scenarios.length > 1 ? i + 1 : ''}:
+Scenario ${scenarios.length > 1 ? i+1 : ''}:
 GIVEN: ${s.given}
 WHEN: ${s.when}
 THEN: ${s.then}
@@ -716,48 +1030,203 @@ ${scenarioText}
 Generate the complete BRD. Be specific and precise. Do not add any preamble or closing remarks — output only the BRD content itself.`;
 
     try {
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true'
-        },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1500,
-          messages: [{ role: 'user', content: prompt }]
-        })
-      });
+      const brdText = await callClaude(apiKey, prompt, 1500);
+      document.getElementById('brd-output-text').textContent = brdText;
+      document.getElementById('brd-output-label').textContent = 'Generated BRD';
 
-      const data = await response.json();
+      // Build tech doc
+      const date    = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+      const reqList = reqs.length ? reqs.map((r,i) => `  ${i+1}. ${r}`).join('\n') : '  (none specified)';
+      const scenList = scenarios.map((s,i) => [
+        `  SCENARIO ${scenarios.length > 1 ? i+1 : ''}`,
+        `  ${'─'.repeat(45)}`,
+        `  GIVEN:  ${s.given || '—'}`,
+        `  WHEN:   ${s.when  || '—'}`,
+        `  THEN:   ${s.then  || '—'}`,
+        s.note ? `  NOTE:   ${s.note}` : ''
+      ].filter(Boolean).join('\n')).join('\n\n');
 
-      if (data.error) {
-        outputText.textContent = `Error: ${data.error.message}`;
-        outputLabel.textContent = 'Error';
-      } else {
-        const text = data.content?.map(b => b.text || '').join('') || 'No response received.';
-        outputText.textContent = text;
-        outputLabel.textContent = 'Generated BRD';
-      }
-    } catch (err) {
-      outputText.textContent = 'Network error. Check your API key and try again.';
-      outputLabel.textContent = 'Error';
+      document.getElementById('tech-output-text').textContent =
+`TECHNICAL SPECIFICATION
+${'═'.repeat(57)}
+BillingPlatform  ·  ${productArea || 'Product'}
+Generated: ${date}
+${'═'.repeat(57)}
+
+FEATURE:          ${featureName}
+JIRA TICKET:      ${jiraTicket     || '[ TO BE FILLED ]'}
+FEATURE AREA:     ${productArea    || '[ TO BE FILLED ]'}
+AFFECTED SYSTEM:  ${affectedSystem || '[ TO BE FILLED ]'}
+STATUS:           Pending Implementation
+
+${'─'.repeat(57)}
+REQUIREMENTS
+${'─'.repeat(57)}
+${reqList}
+
+${'─'.repeat(57)}
+TEST SCENARIOS
+${'─'.repeat(57)}
+${scenList}
+
+${'─'.repeat(57)}
+PM NOTES FOR DEVELOPER
+${'─'.repeat(57)}
+${devNotes || '(none provided)'}
+
+${'─'.repeat(57)}
+DEVELOPER SECTION  —  Complete after implementation
+${'─'.repeat(57)}
+Repository:         [ TO BE FILLED ]
+Branch:             [ TO BE FILLED ]
+Pull Request(s):    [ TO BE FILLED ]
+Files Changed:      [ TO BE FILLED ]
+Deployment Notes:   [ TO BE FILLED ]
+Reviewed By:        [ TO BE FILLED ]
+Merged Date:        [ TO BE FILLED ]
+
+${'═'.repeat(57)}
+END OF TECHNICAL SPECIFICATION
+${'═'.repeat(57)}`;
+
+      document.getElementById('tech-output-label').textContent = 'Technical Specification';
+    } catch (e) {
+      document.getElementById('brd-output-text').textContent = `Error: ${e.message}`;
+      document.getElementById('brd-output-label').textContent = 'Error';
     }
 
     btn.disabled = false;
-    btn.textContent = 'Generate BRD';
+    btn.textContent = 'Generate BRD + Technical Doc';
+  }
+
+  // ─── Download BRD ─────────────────────────────────────────────────────────────
+
+  function downloadBRD() {
+    const featureName = document.getElementById('feature-name').value.trim() || 'BRD';
+    const productArea = document.getElementById('product-area').value.trim();
+    const brdContent  = document.getElementById('brd-output-text').textContent;
+    const examples    = collectExamples();
+    const date        = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+
+    let examplesHtml = '';
+    if (examples.length > 0) {
+      const items = examples.map((ex, i) => {
+        let content = '';
+        if (ex.type === 'ui') {
+          const imgs = (ex.beforeSrc || ex.afterSrc)
+            ? `<div class="img-pair">
+                ${ex.beforeSrc ? `<div class="img-box"><div class="img-label">Before</div><img src="${ex.beforeSrc}" /></div>` : ''}
+                ${ex.afterSrc  ? `<div class="img-box"><div class="img-label">After</div><img src="${ex.afterSrc}" /></div>`  : ''}
+               </div>`
+            : '<p class="empty">No images uploaded.</p>';
+          content = imgs + (ex.caption ? `<p class="caption">${escHtml(ex.caption)}</p>` : '');
+        } else if (ex.type === 'data') {
+          content = ex.html || '<p class="empty">No table generated.</p>';
+        } else {
+          content = ex.svg
+            ? `<div class="diagram">${ex.svg}</div>`
+            : '<p class="empty">No diagram generated.</p>';
+        }
+        return `<div class="ex-card"><h3>Example ${i+1}${ex.title ? ': ' + escHtml(ex.title) : ''}</h3>${content}</div>`;
+      }).join('');
+
+      examplesHtml = `<div class="section"><h2>Examples</h2>${items}</div>`;
+    }
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>BRD — ${escHtml(featureName)}</title>
+<style>
+  body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 820px; margin: 0 auto; padding: 40px 32px; color: #1a1916; line-height: 1.7; }
+  .doc-header { border-bottom: 2px solid #2a5c45; padding-bottom: 20px; margin-bottom: 32px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .brand { font-size: 12px; font-weight: 700; color: #2a5c45; letter-spacing: 0.06em; text-transform: uppercase; }
+  .doc-type { font-size: 11px; color: #9e9a94; letter-spacing: 0.04em; text-transform: uppercase; margin-top: 3px; }
+  h1 { font-size: 22px; font-weight: 700; margin: 14px 0 0; letter-spacing: -0.02em; }
+  .meta { font-size: 13px; color: #6b6760; text-align: right; }
+  .section { margin-bottom: 32px; }
+  h2 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #9e9a94; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid #e2ddd6; }
+  pre { font-family: 'Segoe UI', Arial, sans-serif; white-space: pre-wrap; font-size: 14px; line-height: 1.8; }
+  .ex-card { background: #f7f6f2; border: 1px solid #e2ddd6; border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+  .ex-card h3 { font-size: 14px; font-weight: 600; color: #2a5c45; margin-bottom: 14px; }
+  .img-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .img-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9e9a94; margin-bottom: 6px; }
+  .img-box img { width: 100%; border-radius: 4px; border: 1px solid #e2ddd6; }
+  .caption { font-size: 13px; color: #6b6760; margin-top: 10px; font-style: italic; }
+  .empty { font-size: 13px; color: #9e9a94; font-style: italic; }
+  .diagram { text-align: center; }
+  .diagram svg { max-width: 100%; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: #2a5c45; color: white; padding: 8px 12px; text-align: left; }
+  td { padding: 7px 12px; border-bottom: 1px solid #e2ddd6; }
+  tr:nth-child(even) td { background: #f0ede6; }
+</style>
+</head>
+<body>
+  <div class="doc-header">
+    <div>
+      <div class="brand">BillingPlatform</div>
+      <div class="doc-type">Business Requirements Document</div>
+      <h1>${escHtml(featureName)}</h1>
+    </div>
+    <div class="meta">
+      ${escHtml(date)}<br/>
+      ${productArea ? escHtml(productArea) : ''}
+    </div>
+  </div>
+  <div class="section">
+    <h2>Requirements Document</h2>
+    <pre>${escHtml(brdContent)}</pre>
+  </div>
+  ${examplesHtml}
+</body>
+</html>`;
+
+    triggerDownload(html, `BRD_${featureName.replace(/[^a-zA-Z0-9]/g,'_')}_${today()}.html`);
+  }
+
+  // ─── Download Tech Doc ────────────────────────────────────────────────────────
+
+  function downloadTechDoc() {
+    const featureName = document.getElementById('feature-name').value.trim() || 'Feature';
+    const content     = document.getElementById('tech-output-text').textContent;
+    const escaped     = escHtml(content);
+    const highlighted = escaped.replace(/\[ TO BE FILLED \]/g, '<span style="color:#c0392b;font-style:italic">[ TO BE FILLED ]</span>');
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Tech Spec — ${escHtml(featureName)}</title>
+<style>
+  body { font-family: 'Courier New', Courier, monospace; max-width: 820px; margin: 0 auto; padding: 40px 32px; color: #1a1916; background: #fafaf8; }
+  pre { white-space: pre-wrap; font-size: 13px; line-height: 1.85; font-family: inherit; }
+</style>
+</head>
+<body><pre>${highlighted}</pre></body>
+</html>`;
+
+    triggerDownload(html, `TechSpec_${featureName.replace(/[^a-zA-Z0-9]/g,'_')}_${today()}.html`);
+  }
+
+  function triggerDownload(html, filename) {
+    const blob = new Blob([html], { type: 'text/html' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function today() {
+    return new Date().toISOString().slice(0,10);
   }
 
   // ─── Init ─────────────────────────────────────────────────────────────────────
 
   const sessionId = new URLSearchParams(window.location.search).get('session');
-  if (sessionId) {
-    loadSession(sessionId);
-  } else {
-    addScenario(); // blank form — add one empty scenario
-  }
+  if (sessionId) loadSession(sessionId);
+  else addScenario();
 </script>
 </body>
 </html>
