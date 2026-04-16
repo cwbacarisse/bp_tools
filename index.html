@@ -312,19 +312,97 @@
     overflow: auto; margin-top: 8px; text-align: center;
   }
 
-  .api-key-section {
-    background: var(--success-light);
-    border: 1px solid var(--success-border);
-    border-radius: var(--radius);
-    padding: 1rem 1.25rem; margin-bottom: 1rem;
-    display: flex; align-items: center; gap: 12px;
-    box-shadow: var(--shadow-sm);
+  /* ---- Settings Button ---- */
+  .settings-btn {
+    width: 30px; height: 30px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+    color: var(--text3);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; flex-shrink: 0;
   }
-  .api-key-icon { font-size: 18px; flex-shrink: 0; }
-  .api-key-section label { font-size: 12px; font-weight: 700; color: var(--success); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
-  .api-key-section input { border-color: var(--success-border); background: var(--surface); font-family: var(--font-mono); font-size: 13px; color: var(--text); }
-  .api-key-section input:focus { border-color: var(--success); box-shadow: 0 0 0 3px rgba(5,150,105,0.1); }
-  .api-key-note { font-size: 12px; color: #6EE7B7; margin-top: 3px; }
+  .settings-btn:hover { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+  .settings-btn.active { background: var(--accent-light); color: var(--accent); border-color: #93C5FD; }
+
+  /* ---- Settings Panel ---- */
+  .settings-panel {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    display: none;
+    position: sticky;
+    top: 52px;
+    z-index: 9;
+  }
+  .settings-panel.open { display: block; }
+  .settings-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 1.25rem 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 28px;
+  }
+  .settings-section-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text3);
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .settings-field { margin-bottom: 8px; }
+  .settings-field label { font-size: 11px; font-weight: 600; color: var(--text2); margin-bottom: 4px; }
+  .settings-field input { font-size: 13px; padding: 7px 10px; }
+  .settings-hint { font-size: 11px; color: var(--text3); margin-top: 5px; line-height: 1.5; }
+  .settings-footer {
+    max-width: 760px; margin: 0 auto;
+    padding: 0 1.5rem 1rem;
+    display: flex; justify-content: flex-end; gap: 8px;
+  }
+
+  /* ---- Push Buttons ---- */
+  .push-btn {
+    font-size: 12px; font-weight: 600; padding: 5px 12px;
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: var(--radius-sm); cursor: pointer;
+    color: var(--text2); transition: all 0.15s; font-family: var(--font-body);
+    display: flex; align-items: center; gap: 5px;
+  }
+  .push-btn:hover { background: var(--accent-light); color: var(--accent); border-color: #93C5FD; }
+  .push-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .push-btn.conf { }
+  .push-btn.conf:hover { background: #F0FDF4; color: var(--success); border-color: var(--success-border); }
+
+  /* ---- Toast ---- */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 16px 12px 14px;
+    box-shadow: var(--shadow-md);
+    font-size: 13px; font-weight: 500;
+    z-index: 200;
+    max-width: 340px;
+    transform: translateY(80px); opacity: 0;
+    transition: all 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
+    pointer-events: none;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+  .toast-success { border-left: 3px solid var(--success); }
+  .toast-error   { border-left: 3px solid var(--danger); }
+  .toast-info    { border-left: 3px solid var(--accent); }
+  .toast-icon { font-size: 15px; flex-shrink: 0; line-height: 1.4; }
+  .toast-body { flex: 1; }
+  .toast-title { font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .toast-msg { font-size: 12px; color: var(--text2); font-weight: 400; }
+  .toast-close { background: none; border: none; cursor: pointer; color: var(--text3); font-size: 16px; padding: 0; line-height: 1; flex-shrink: 0; }
 
   .generate-btn {
     width: 100%; padding: 11px;
@@ -503,6 +581,7 @@
   @media (max-width: 580px) {
     .two-col, .image-upload-pair, .module-grid { grid-template-columns: 1fr; }
     main { padding: 1.5rem 1rem 3rem; }
+    .settings-inner { grid-template-columns: 1fr; gap: 20px; }
   }
 </style>
 </head>
@@ -513,8 +592,56 @@
     <div class="logo-dot"></div>
     BillingPlatform
   </div>
-  <span class="header-tag">BRD Generator</span>
+  <div style="display:flex;align-items:center;gap:8px">
+    <span class="header-tag">BRD Generator</span>
+    <button class="settings-btn" id="settings-btn" onclick="toggleSettings()" title="Settings">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="7" r="2" stroke="currentColor" stroke-width="1.4"/><path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M2.93 2.93l1.06 1.06M10.01 10.01l1.06 1.06M2.93 11.07l1.06-1.06M10.01 3.99l1.06-1.06" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    </button>
+  </div>
 </header>
+
+<div class="settings-panel" id="settings-panel">
+  <div class="settings-inner">
+    <div>
+      <div class="settings-section-title">Anthropic</div>
+      <div class="settings-field">
+        <label>API Key</label>
+        <input type="password" id="setting-api-key" placeholder="sk-ant-api03-…" autocomplete="off" />
+      </div>
+      <div class="settings-hint">Sent only to Anthropic's API. Never stored on any server.</div>
+    </div>
+    <div>
+      <div class="settings-section-title">Jira</div>
+      <div class="settings-field">
+        <label>Base URL</label>
+        <input type="text" id="setting-jira-url" placeholder="https://yourco.atlassian.net" />
+      </div>
+      <div class="settings-field">
+        <label>Email</label>
+        <input type="text" id="setting-jira-email" placeholder="you@billingplatform.com" autocomplete="off" />
+      </div>
+      <div class="settings-field">
+        <label>API Token</label>
+        <input type="password" id="setting-jira-token" placeholder="••••••••••••••••••" autocomplete="off" />
+      </div>
+    </div>
+    <div>
+      <div class="settings-section-title">Confluence</div>
+      <div class="settings-field">
+        <label>Space Key</label>
+        <input type="text" id="setting-conf-space" placeholder="e.g. PM" />
+      </div>
+      <div class="settings-field">
+        <label>Parent Page ID <span style="font-weight:400;color:var(--text3)">(optional)</span></label>
+        <input type="text" id="setting-conf-parent" placeholder="e.g. 123456789" />
+      </div>
+      <div class="settings-hint">Uses same URL and credentials as Jira.</div>
+    </div>
+  </div>
+  <div class="settings-footer">
+    <button class="copy-btn" onclick="saveSettings()">Save</button>
+  </div>
+</div>
 
 <main>
   <h1 class="page-title">BRD Generator</h1>
@@ -535,15 +662,6 @@
   <div class="banner banner-loading" id="banner-loading">⏳ Loading session data…</div>
   <div class="banner banner-success" id="banner-success">✦ Form pre-filled from Claude Code — review the fields below then click Generate.</div>
   <div class="banner banner-error"   id="banner-error">⚠ Could not load session data. You can fill the form manually.</div>
-
-  <div class="api-key-section">
-    <div class="api-key-icon">🔑</div>
-    <div style="flex:1">
-      <label for="api-key">Anthropic API Key</label>
-      <input type="password" id="api-key" placeholder="sk-ant-..." />
-      <div class="api-key-note">Your key is never stored or sent anywhere except the Anthropic API.</div>
-    </div>
-  </div>
 
   <!-- ===== PM PERSONA FORM ===== -->
   <div id="pm-form">
@@ -571,6 +689,10 @@
     <div class="field-group">
       <label>Why (the business reason)</label>
       <textarea id="business-reason" rows="2" placeholder="e.g. so that invoice line items accurately reflect the time-based value of each rate plan during the billing period"></textarea>
+    </div>
+    <div class="field-group">
+      <label>Open questions &amp; assumptions <span style="font-weight:400;color:var(--text3)">(optional)</span></label>
+      <textarea id="open-questions" rows="2" placeholder="e.g. Does this apply to mid-cycle contract swaps, or subscriptions only? Assumes all plans share the same billing cycle close day."></textarea>
     </div>
   </div>
 
@@ -780,6 +902,14 @@
         <span class="output-label" id="brd-output-label">Generated BRD</span>
         <div class="toolbar-actions">
           <button class="copy-btn" onclick="copyBRD()">Copy</button>
+          <button class="push-btn" id="jira-push-btn" onclick="pushToJira()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M11.75 2C6.37 2 2 6.37 2 11.75S6.37 21.5 11.75 21.5 21.5 17.13 21.5 11.75 17.13 2 11.75 2zm4.55 7.54l-5.1 5.1a.75.75 0 01-1.06 0L7.7 11.2a.75.75 0 011.06-1.06l1.97 1.97 4.57-4.57a.75.75 0 011.06 1.06-.03 0 0-.06-.06z"/></svg>
+            Push to Jira
+          </button>
+          <button class="push-btn conf" id="brd-conf-btn" onclick="pushToConfluence('pm')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5a2 2 0 012-2h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm2 0v14h14V5H5zm2 3h10v2H7V8zm0 4h10v2H7v-2zm0 4h6v2H7v-2z"/></svg>
+            Confluence
+          </button>
           <button class="download-btn" onclick="downloadBRD()">Download BRD</button>
         </div>
       </div>
@@ -806,6 +936,10 @@
         <span class="output-label" id="ps-output-label">Generated Pro Serv BRD</span>
         <div class="toolbar-actions">
           <button class="copy-btn" onclick="copyPS()">Copy</button>
+          <button class="push-btn conf" id="ps-conf-btn" onclick="pushToConfluence('ps')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5a2 2 0 012-2h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm2 0v14h14V5H5zm2 3h10v2H7V8zm0 4h10v2H7v-2zm0 4h6v2H7v-2z"/></svg>
+            Confluence
+          </button>
           <button class="download-btn" onclick="downloadPSBRD()">Download BRD</button>
         </div>
       </div>
@@ -813,6 +947,15 @@
     </div>
   </div>
 </main>
+
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toast-icon"></span>
+  <div class="toast-body">
+    <div class="toast-title" id="toast-title"></div>
+    <div class="toast-msg" id="toast-msg"></div>
+  </div>
+  <button class="toast-close" onclick="dismissToast()">×</button>
+</div>
 
 <script>
   mermaid.initialize({ startOnLoad: false, theme: 'neutral' });
@@ -845,6 +988,294 @@
     document.getElementById(wrapId).classList.toggle('checked', checkbox.checked);
   }
 
+  /* ============================================================
+     SETTINGS — persist to localStorage
+  ============================================================ */
+  const LS = {
+    api:       'bp_api_key',
+    jiraUrl:   'bp_jira_url',
+    jiraEmail: 'bp_jira_email',
+    jiraToken: 'bp_jira_token',
+    confSpace: 'bp_conf_space',
+    confParent:'bp_conf_parent',
+  };
+
+  function loadSettings() {
+    document.getElementById('setting-api-key').value    = localStorage.getItem(LS.api)       || '';
+    document.getElementById('setting-jira-url').value   = localStorage.getItem(LS.jiraUrl)   || '';
+    document.getElementById('setting-jira-email').value = localStorage.getItem(LS.jiraEmail) || '';
+    document.getElementById('setting-jira-token').value = localStorage.getItem(LS.jiraToken) || '';
+    document.getElementById('setting-conf-space').value = localStorage.getItem(LS.confSpace) || '';
+    document.getElementById('setting-conf-parent').value= localStorage.getItem(LS.confParent)|| '';
+  }
+
+  function saveSettings() {
+    localStorage.setItem(LS.api,       document.getElementById('setting-api-key').value.trim());
+    localStorage.setItem(LS.jiraUrl,   document.getElementById('setting-jira-url').value.trim());
+    localStorage.setItem(LS.jiraEmail, document.getElementById('setting-jira-email').value.trim());
+    localStorage.setItem(LS.jiraToken, document.getElementById('setting-jira-token').value.trim());
+    localStorage.setItem(LS.confSpace, document.getElementById('setting-conf-space').value.trim());
+    localStorage.setItem(LS.confParent,document.getElementById('setting-conf-parent').value.trim());
+    showToast('success', 'Settings saved', 'Credentials stored in your browser.');
+    toggleSettings(false);
+  }
+
+  function toggleSettings(forceState) {
+    const panel = document.getElementById('settings-panel');
+    const btn   = document.getElementById('settings-btn');
+    const open  = forceState !== undefined ? forceState : !panel.classList.contains('open');
+    panel.classList.toggle('open', open);
+    btn.classList.toggle('active', open);
+  }
+
+  /* ============================================================
+     TOAST NOTIFICATIONS
+  ============================================================ */
+  let toastTimer;
+  function showToast(type, title, msg = '', duration = 4000) {
+    const icons = { success: '✓', error: '✕', info: '↑' };
+    const el = document.getElementById('toast');
+    el.className = `toast toast-${type}`;
+    document.getElementById('toast-icon').textContent  = icons[type] || '•';
+    document.getElementById('toast-title').textContent = title;
+    document.getElementById('toast-msg').textContent   = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    if (duration) toastTimer = setTimeout(dismissToast, duration);
+  }
+  function dismissToast() {
+    document.getElementById('toast').classList.remove('show');
+  }
+
+  /* ============================================================
+     JIRA INTEGRATION
+  ============================================================ */
+  function brdToADF(text) {
+    const lines = text.split('\n');
+    const content = [];
+    let bullets = [];
+
+    function flushBullets() {
+      if (!bullets.length) return;
+      content.push({ type: 'bulletList', content: bullets.map(t => ({
+        type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: t }] }]
+      }))});
+      bullets = [];
+    }
+
+    for (const line of lines) {
+      const raw = line.trim();
+      if (!raw) { flushBullets(); continue; }
+
+      // Bold heading **...**
+      if (/^\*\*.+\*\*$/.test(raw)) {
+        flushBullets();
+        content.push({ type: 'heading', attrs: { level: 2 },
+          content: [{ type: 'text', text: raw.replace(/\*\*/g,'').replace(/:$/,'').trim() }]
+        });
+        continue;
+      }
+      // Bullet * or •
+      if (/^[\*•]\s/.test(raw)) {
+        bullets.push(raw.replace(/^[\*•]\s/,'').trim());
+        continue;
+      }
+      // Divider
+      if (/^[-—=]+$/.test(raw)) { flushBullets(); continue; }
+
+      flushBullets();
+      content.push({ type: 'paragraph', content: [{ type: 'text', text: raw }] });
+    }
+    flushBullets();
+    if (!content.length) content.push({ type: 'paragraph', content: [{ type: 'text', text: '(empty)' }] });
+    return { type: 'doc', version: 1, content };
+  }
+
+  async function pushToJira() {
+    const jiraUrl = localStorage.getItem(LS.jiraUrl)?.replace(/\/$/, '');
+    const email   = localStorage.getItem(LS.jiraEmail);
+    const token   = localStorage.getItem(LS.jiraToken);
+    const ticket  = document.getElementById('jira-ticket')?.value.trim();
+
+    if (!jiraUrl || !email || !token) {
+      showToast('error', 'Jira not configured', 'Open Settings (⚙) and add your Jira credentials.');
+      return;
+    }
+    if (!ticket) {
+      showToast('error', 'No ticket specified', 'Enter a Jira ticket number in the Technical Doc fields.');
+      return;
+    }
+    const brdText = document.getElementById('brd-output-text').textContent;
+    if (!brdText.trim()) {
+      showToast('error', 'Nothing to push', 'Generate the BRD first.');
+      return;
+    }
+
+    const btn = document.getElementById('jira-push-btn');
+    btn.disabled = true; btn.textContent = 'Pushing…';
+
+    try {
+      const adf = brdToADF(brdText);
+      const res = await fetch(`${jiraUrl}/rest/api/3/issue/${ticket}/comment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Basic ' + btoa(`${email}:${token}`)
+        },
+        body: JSON.stringify({ body: adf })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        showToast('success', `Added to ${ticket}`,
+          `Comment posted. View at ${jiraUrl}/browse/${ticket}`);
+      } else {
+        const err = await res.json().catch(() => ({}));
+        showToast('error', `Jira error ${res.status}`,
+          err.errorMessages?.[0] || err.message || 'Check your credentials and ticket number.');
+      }
+    } catch (e) {
+      showToast('error', 'Connection failed', e.message);
+    }
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M11.75 2C6.37 2 2 6.37 2 11.75S6.37 21.5 11.75 21.5 21.5 17.13 21.5 11.75 17.13 2 11.75 2zm4.55 7.54l-5.1 5.1a.75.75 0 01-1.06 0L7.7 11.2a.75.75 0 011.06-1.06l1.97 1.97 4.57-4.57a.75.75 0 011.06 1.06-.03 0 0-.06-.06z"/></svg> Push to Jira`;
+  }
+
+  /* ============================================================
+     CONFLUENCE INTEGRATION
+  ============================================================ */
+  function brdToConfluenceStorage(text) {
+    const lines = text.split('\n');
+    let html = '', inList = false;
+    for (const line of lines) {
+      const raw = line.trim();
+      if (!raw) { if (inList) { html += '</ul>'; inList = false; } continue; }
+      if (/^\*\*.+\*\*$/.test(raw)) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<h2>${escHtml(raw.replace(/\*\*/g,'').replace(/:$/,'').trim())}</h2>`;
+        continue;
+      }
+      if (/^[\*•]\s/.test(raw)) {
+        if (!inList) { html += '<ul>'; inList = true; }
+        html += `<li>${escHtml(raw.replace(/^[\*•]\s/,'').trim())}</li>`;
+        continue;
+      }
+      if (/^[-—=]+$/.test(raw)) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += '<hr/>';
+        continue;
+      }
+      if (inList) { html += '</ul>'; inList = false; }
+      html += `<p>${escHtml(raw)}</p>`;
+    }
+    if (inList) html += '</ul>';
+    return html;
+  }
+
+  function psTextToConfluenceStorage(text) {
+    const lines = text.split('\n');
+    let html = '', inTable = false;
+    for (const line of lines) {
+      const raw = line.trim();
+      if (!raw) { if (inTable) { html += '</tbody></table>'; inTable = false; } continue; }
+
+      if (raw.includes(' | ') && /^[A-Za-z]+\.\d+/.test(raw)) {
+        if (!inTable) {
+          html += '<table><tbody><tr><th style="width:80px">ID</th><th>Requirement</th></tr>';
+          inTable = true;
+        }
+        const [id, ...rest] = raw.split(' | ');
+        html += `<tr><td><strong>${escHtml(id)}</strong></td><td>${escHtml(rest.join(' | '))}</td></tr>`;
+        continue;
+      }
+      if (inTable) { html += '</tbody></table>'; inTable = false; }
+
+      if (/^[A-Z0-9 \-–&,]+$/.test(raw) && raw.length > 4 && raw.length < 80) {
+        if (/^\d+\s*[–\-]/.test(raw)) html += `<h2>${escHtml(raw)}</h2>`;
+        else if (raw === 'BUSINESS REQUIREMENTS DOCUMENT') html += `<h1>${escHtml(raw)}</h1>`;
+        else html += `<h3>${escHtml(raw)}</h3>`;
+        continue;
+      }
+      if (/^(PREPARED BY|REVIEWED BY|APPROVED BY|DATE|REVISION|PHASE):/.test(raw)) {
+        const ci = raw.indexOf(':');
+        html += `<p><strong>${escHtml(raw.slice(0,ci))}:</strong> ${escHtml(raw.slice(ci+1).trim())}</p>`;
+        continue;
+      }
+      if (/^[-=─]+$/.test(raw)) continue;
+      html += `<p>${escHtml(raw)}</p>`;
+    }
+    if (inTable) html += '</tbody></table>';
+    return html;
+  }
+
+  async function pushToConfluence(persona) {
+    const jiraUrl  = localStorage.getItem(LS.jiraUrl)?.replace(/\/$/, '');
+    const email    = localStorage.getItem(LS.jiraEmail);
+    const token    = localStorage.getItem(LS.jiraToken);
+    const spaceKey = localStorage.getItem(LS.confSpace);
+    const parentId = localStorage.getItem(LS.confParent);
+
+    if (!jiraUrl || !email || !token || !spaceKey) {
+      showToast('error', 'Confluence not configured', 'Open Settings (⚙) and add your Jira/Confluence credentials and Space Key.');
+      return;
+    }
+
+    const isPS    = persona === 'ps';
+    const title   = isPS
+      ? (document.getElementById('ps-client-name')?.value.trim() || 'Pro Serv BRD') + ' — BRD'
+      : (document.getElementById('feature-name')?.value.trim() || 'Feature BRD') + ' — BRD';
+    const rawText = isPS
+      ? document.getElementById('ps-output-text')?.textContent
+      : document.getElementById('brd-output-text')?.textContent;
+
+    if (!rawText?.trim()) {
+      showToast('error', 'Nothing to push', 'Generate the BRD first.');
+      return;
+    }
+
+    const btnId = isPS ? 'ps-conf-btn' : 'brd-conf-btn';
+    const btn   = document.getElementById(btnId);
+    btn.disabled = true; btn.textContent = 'Pushing…';
+
+    const storageBody = isPS ? psTextToConfluenceStorage(rawText) : brdToConfluenceStorage(rawText);
+    const confBase    = jiraUrl.includes('/wiki') ? jiraUrl : jiraUrl + '/wiki';
+    const payload     = {
+      type: 'page',
+      title,
+      space: { key: spaceKey },
+      body: { storage: { value: storageBody, representation: 'storage' } }
+    };
+    if (parentId) payload.ancestors = [{ id: parentId }];
+
+    try {
+      const res = await fetch(`${confBase}/rest/api/content`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Basic ' + btoa(`${email}:${token}`)
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      if (res.ok && data._links?.webui) {
+        const pageUrl = jiraUrl + data._links.webui;
+        showToast('success', 'Page created', pageUrl, 6000);
+      } else if (res.ok) {
+        showToast('success', 'Page created in Confluence', title);
+      } else {
+        const msg = data.message || data.errorMessages?.[0] || `HTTP ${res.status}`;
+        showToast('error', 'Confluence error', msg);
+      }
+    } catch (e) {
+      showToast('error', 'Connection failed', e.message);
+    }
+
+    btn.disabled = false;
+    const icon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5a2 2 0 012-2h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm2 0v14h14V5H5zm2 3h10v2H7V8zm0 4h10v2H7v-2zm0 4h6v2H7v-2z"/></svg>`;
+    btn.innerHTML = icon + ' Confluence';
+  }
+
   function escHtml(str = '') {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
@@ -861,7 +1292,9 @@
       document.getElementById(`banner-${n}`).classList.toggle('visible', n === name)
     );
   }
-  function getApiKey() { return document.getElementById('api-key').value.trim(); }
+  function getApiKey() {
+    return document.getElementById('setting-api-key')?.value.trim() || localStorage.getItem('bp_api_key') || '';
+  }
 
   function addReq(value = '', highlight = false) {
     const list = document.getElementById('requirements-list');
@@ -1135,43 +1568,51 @@
     document.getElementById('brd-output-text').textContent  = '';
     document.getElementById('tech-output-text').textContent = '';
 
+    const openQs      = document.getElementById('open-questions')?.value.trim();
     const scenarioText = scenarios.map((s, i) => `\nScenario ${scenarios.length > 1 ? i+1 : ''}:\nGIVEN: ${s.given}\nWHEN: ${s.when}\nTHEN: ${s.then}\n${s.note ? 'NOTE: ' + s.note : ''}`).join('\n');
 
-    const prompt = `You are a product manager assistant at BillingPlatform, a SaaS revenue lifecycle management platform. Generate a professional Business Requirements Document (BRD) story in the exact format below. Match the tone and structure precisely — formal but clear, using bullet points for requirements and Given/When/Then for scenarios.
+    const prompt = `You are a product manager assistant at BillingPlatform, a SaaS revenue lifecycle management platform. Generate a concise, precise BRD in the format below.
 
-FORMAT:
+QUALITY STANDARDS — apply these without exception:
+- User Story "what": Name the exact mechanism or configuration, not a vague capability. Instead of "configure proration" write "define a proration method (daily-rate or none) per subscription rate plan".
+- User Story "so that": Name the specific measurable outcome. Instead of "invoices are accurate" write "mid-cycle upgrade line items reflect only the days each rate plan was active".
+- Requirements: Write each as an active, observable statement. Prefer "When [condition], [system does X]" over "The system should support X". Aim for 4–6 — not a long list.
+- GIVEN: Describe the exact starting state and relevant data (2–3 sentences, no padding).
+- WHEN: Single, specific trigger action.
+- THEN: 2–3 observable, verifiable outcomes only. No filler.
+- If there is a NOTE, it must describe a material behavioral difference from today — skip it if trivial.
+
+FORMAT (output exactly this, nothing else):
 **User Story:**
-As [user role], I need [user need], so that [business reason].
+As [user role], I need [specific mechanism], so that [specific measurable outcome].
 
 **Requirements:**
-* [requirement 1]
-* [requirement 2]
-...
+* [active, testable requirement]
 
 **Scenarios for Development:**
 
 **GIVEN**
-[setup/preconditions]
+[exact state + data setup]
 
-**When**
-[trigger action]
+**WHEN**
+[single trigger]
 
-**Then**
-[expected outcomes]
+**THEN**
+[verifiable outcomes]
 
-NOTE - [old vs new behavior context if provided]
-
+NOTE — [material behavioral difference only; omit if none]
+${openQs ? '\n**Open Questions & Assumptions:**\n' + openQs : ''}
 ---
 INPUT:
-Feature name: ${featureName}
+Feature: ${featureName}
 Product area: ${productArea || 'not specified'}
 User role: ${userRole}
 User need: ${userNeed}
 Business reason: ${businessReason}
-Requirements: ${reqs.length ? reqs.map((r,i) => `${i+1}. ${r}`).join('\n') : 'infer reasonable requirements from the context'}
+Requirements provided: ${reqs.length ? reqs.map((r,i) => `${i+1}. ${r}`).join('\n') : 'none — infer 4–6 precise requirements from context'}
 ${scenarioText}
 
-Generate the complete BRD. Prioritize quality over quantity — fewer, sharper requirements are better than a long list of vague ones. Each scenario section (Given/When/Then) should be 2–4 sentences, not exhaustive prose. Cut any filler language. Do not add preamble or closing remarks — output only the BRD content itself.`;
+Output only the BRD. No preamble, no closing remarks.`;
 
     try {
       const brdText = await callClaude(apiKey, prompt, 1500);
@@ -1530,9 +1971,19 @@ ${htmlBody}
     triggerDownload(html, `BRD_${clientName.replace(/[^a-zA-Z0-9]/g,'_')}_${today()}.html`);
   }
 
+  // Load persisted settings on startup
+  loadSettings();
+
   const sessionId = new URLSearchParams(window.location.search).get('session');
   if (sessionId) loadSession(sessionId);
   else addScenario();
+
+  // Nudge user to open settings if no API key stored
+  window.addEventListener('load', () => {
+    if (!localStorage.getItem(LS.api)) {
+      setTimeout(() => showToast('info', 'Add your API key', 'Click ⚙ in the top-right to configure settings.', 6000), 800);
+    }
+  });
 </script>
 </body>
 </html>
