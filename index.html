@@ -626,11 +626,11 @@
     <div class="two-col">
       <div class="field-group">
         <label>Client Name</label>
-        <input type="text" id="ps-client-name" placeholder="e.g. Wineshipping" />
+        <input type="text" id="ps-client-name" placeholder="e.g. Acme Logistics" />
       </div>
       <div class="field-group">
         <label>Project / Implementation Name</label>
-        <input type="text" id="ps-project-name" placeholder="e.g. Wineshipping BillingPlatform Implementation" />
+        <input type="text" id="ps-project-name" placeholder="e.g. Acme Logistics BillingPlatform Implementation" />
       </div>
     </div>
     <div class="two-col">
@@ -721,52 +721,52 @@
     <div class="module-block" id="mod-ecosystem">
       <div class="module-block-title">Ecosystem &amp; Integrations</div>
       <div class="scenario-label" style="margin-bottom:5px">What systems integrate with BillingPlatform? Describe data flows, file formats, directions, and any SSO.</div>
-      <textarea id="txt-ecosystem" rows="4" placeholder="e.g. Usage and payment data sent from Databricks to BP via SFTP CSV. BP sends invoices, invoice details, and rate details back to Databricks. SSO via Microsoft Azure for both internal users and the customer portal."></textarea>
+      <textarea id="txt-ecosystem" rows="4" placeholder="e.g. What source systems send usage or payment data to BP (ERP, CRM, data warehouse)? What format and method (SFTP, API, flat file)? What does BP send back? Any SSO provider for internal users or customer portal?"></textarea>
     </div>
     <div class="module-block" id="mod-catalog">
       <div class="module-block-title">Product Catalog</div>
       <div class="scenario-label" style="margin-bottom:5px">Describe the client's products and services, how they're charged, and any special product types (bundled, usage-based, flat fee, etc.).</div>
-      <textarea id="txt-catalog" rows="4" placeholder="e.g. Primarily usage-based products including storage, fulfillment, fuel surcharges, and shipping. Bundled rates for groups of products. One-time fee products for add-ons like gift notes and ice packs. Discount products with invoice visibility."></textarea>
+      <textarea id="txt-catalog" rows="4" placeholder="e.g. What services or products does the client charge for? How are they rated (usage, flat fee, tiered, bundled)? Any special product types like discounts, minimums, or surcharges?"></textarea>
     </div>
     <div class="module-block" id="mod-pricing">
       <div class="module-block-title">Pricing &amp; Rating</div>
       <div class="scenario-label" style="margin-bottom:5px">How are rates structured? Tiered? By account? Are there bulk rate updates, promotional pricing, or surcharges?</div>
-      <textarea id="txt-pricing" rows="4" placeholder="e.g. Rates stored at the contract level. Tiered and warehouse-specific rate cards. Annual bulk rate adjustments needed. Promotional pricing and carrier surcharges during peak seasons. Customer-visible discount lines on invoices."></textarea>
+      <textarea id="txt-pricing" rows="4" placeholder="e.g. Where are rates stored — contract level, product level, or both? Tiered, flat, or formula-based? Any bulk rate update needs, promotional pricing windows, or surcharges?"></textarea>
     </div>
     <div class="module-block" id="mod-accounts">
       <div class="module-block-title">Accounts &amp; Invoicing</div>
       <div class="scenario-label" style="margin-bottom:5px">Describe account hierarchy, invoicing frequency, delivery method, payment terms, and any custom account attributes.</div>
-      <textarea id="txt-accounts" rows="4" placeholder="e.g. Parent/child account hierarchy. Invoicing monthly, bi-weekly, weekly, or ad-hoc. Invoices sent via email PDF or customer portal link. Auto-close, manual approval. Custom fields: D365 customer number, company chain ID."></textarea>
+      <textarea id="txt-accounts" rows="4" placeholder="e.g. Is there a parent/child account structure? What invoicing frequencies are needed? How are invoices delivered (email, portal)? Auto-close or manual approval? Any custom account attributes not in BP's standard data model?"></textarea>
     </div>
     <div class="module-block" id="mod-contracts">
       <div class="module-block-title">Contracts</div>
       <div class="scenario-label" style="margin-bottom:5px">How are contracted rates managed? Are there bulk data migrations? One contract per account or multiple?</div>
-      <textarea id="txt-contracts" rows="4" placeholder="e.g. One contract per account at either parent or child level. Contracted rates override product defaults. Initial migration via bulk data loader. Post-migration, contracts managed manually. Historical rate records required."></textarea>
+      <textarea id="txt-contracts" rows="4" placeholder="e.g. One contract per account or multiple? At which account level? Initial contract data being migrated via bulk loader? How will contracts be managed post go-live — manual or automated? Is rate history required?"></textarea>
     </div>
     <div class="module-block" id="mod-accounting">
       <div class="module-block-title">Accounting, Finance &amp; AR</div>
       <div class="scenario-label" style="margin-bottom:5px">What external accounting system is used? How are payments, credits, and dunning handled? What data flows back to their accounting system?</div>
-      <textarea id="txt-accounting" rows="4" placeholder="e.g. D365 is source of truth for accounting. Payments managed in D365, passed to BP via SFTP lockbox. Manual payment and credit allocation. Credits managed per billing cycle. Up to 2 custom dunning processes via BP workflow engine."></textarea>
+      <textarea id="txt-accounting" rows="4" placeholder="e.g. What system is the source of truth for accounting (ERP, GL)? How do payments reach BP — direct or via file? Manual or auto payment/credit allocation? Any dunning process requirements? What data must BP export for reconciliation?"></textarea>
     </div>
     <div class="module-block" id="mod-roles">
       <div class="module-block-title">Roles &amp; Security</div>
       <div class="scenario-label" style="margin-bottom:5px">What user roles need access? Any SSO? What permissions are needed (read-only vs admin vs billing-only)?</div>
-      <textarea id="txt-roles" rows="4" placeholder="e.g. Internal billing team users with full admin rights. Customers access portal with self-service limited to billing address and contact info. SSO via Azure AD for both user types."></textarea>
+      <textarea id="txt-roles" rows="4" placeholder="e.g. What user types need access (billing team, finance, customers, read-only ops)? What can each role see or do? Is there a customer self-service portal? Any field-level restrictions or approval-based access?"></textarea>
     </div>
     <div class="module-block" id="mod-reports">
       <div class="module-block-title">Reports</div>
       <div class="scenario-label" style="margin-bottom:5px">What reporting is required? What data exports or E-Files are needed? Any specific reports for operations or customers?</div>
-      <textarea id="txt-reports" rows="4" placeholder="e.g. Invoice detail E-File available in customer portal. Aging and GL data exported to D365 for reconciliation. Usage error reporting for troubleshooting. Rate source traceability on invoice charges."></textarea>
+      <textarea id="txt-reports" rows="4" placeholder="e.g. What standard BP reports are needed? Any custom reports or data exports? E-File (invoice detail CSV) requirements? Does data need to flow back to an external system for reporting or reconciliation?"></textarea>
     </div>
     <div class="module-block" id="mod-migration">
       <div class="module-block-title">Data Migration</div>
       <div class="scenario-label" style="margin-bottom:5px">What data needs to be migrated? What tools or templates will be used? What's in scope vs out of scope?</div>
-      <textarea id="txt-migration" rows="4" placeholder="e.g. Customer accounts migrated via BP bulk data loader. Contract data migrated with loader template (rates migrated separately). Historical invoice data out of scope for Phase 1."></textarea>
+      <textarea id="txt-migration" rows="4" placeholder="e.g. What data needs to migrate (accounts, contracts, rates, historical invoices)? What tools or templates will be used? What data is the client responsible for preparing vs. BP configuring?"></textarea>
     </div>
     <div class="module-block" id="mod-scope">
       <div class="module-block-title">Scope Boundaries</div>
       <div class="scenario-label" style="margin-bottom:5px">What is explicitly out of scope? What's deferred to a future phase? Any known limitations?</div>
-      <textarea id="txt-scope" rows="4" placeholder="e.g. Multi-currency out of scope (USD only). Multi-language out of scope. Collections module not included Phase 1. No automated account sync from D365 — manual updates only."></textarea>
+      <textarea id="txt-scope" rows="4" placeholder="e.g. What is explicitly out of scope for this phase? What's deferred (multi-currency, collections, integrations)? Any manual processes that won't be automated? Known constraints or client responsibilities?"></textarea>
     </div>
   </div><!-- end Functional Modules card -->
 
@@ -1171,7 +1171,7 @@ Business reason: ${businessReason}
 Requirements: ${reqs.length ? reqs.map((r,i) => `${i+1}. ${r}`).join('\n') : 'infer reasonable requirements from the context'}
 ${scenarioText}
 
-Generate the complete BRD. Be specific and precise. Do not add any preamble or closing remarks — output only the BRD content itself.`;
+Generate the complete BRD. Prioritize quality over quantity — fewer, sharper requirements are better than a long list of vague ones. Each scenario section (Given/When/Then) should be 2–4 sentences, not exhaustive prose. Cut any filler language. Do not add preamble or closing remarks — output only the BRD content itself.`;
 
     try {
       const brdText = await callClaude(apiKey, prompt, 1500);
@@ -1388,22 +1388,20 @@ PROJECT OVERVIEW: Write a 2-3 paragraph narrative describing the business challe
 4. For EACH selected section, generate:
 [Section Number] – [SECTION NAME]
 [SECTION NAME] OVERVIEW
-Write a professional 2-4 paragraph narrative overview of how BillingPlatform will address this functional area for ${clientName}. Be specific to the consultant notes and client context. Include specific BP features, configuration options, and how they map to the client's needs.
+Write a concise 2–3 paragraph overview of how BillingPlatform addresses this functional area. Be specific to the consultant notes — name the BP features and configurations that apply. Cut anything that doesn't add decision-making value.
 
 [SECTION NAME] REQUIREMENTS
 ID | Requirement
-Generate 5-10 specific, measurable requirements in the format:
-[Prefix].[N] | [Requirement text — must be specific, actionable, and reference ${clientName} by name]
+Generate 4–7 precise, testable requirements in the format:
+[Prefix].[N] | [Single, actionable requirement statement]
 
-Use the requirement ID prefix provided. Number sequentially starting from 1. Write requirements as capabilities the system needs to support or actions BillingPlatform/the client will take.
+Use the requirement ID prefix provided. Number sequentially starting from 1. Each requirement must be testable and specific — avoid vague language like "the system should support" in favor of concrete, verifiable statements.
 
 5. End with:
 ---
 END OF DOCUMENT
 
-TONE: Professional, consultant-grade. Mirror the structure, specificity, and voice of a real BP implementation BRD. Reference ${clientName} by name throughout. Each requirement should be a single, testable statement.
-
-Output ONLY the document content — no preamble, no explanation, no markdown formatting.`;
+TONE: Professional, consultant-grade. Concise — each section overview should be 2–3 focused paragraphs, not exhaustive summaries. Quality over quantity: fewer, tighter requirements are better than padding. Use the client name only where it adds clarity. No filler phrases. Output ONLY the document content — no preamble, no explanation, no markdown formatting.`;
 
     try {
       const text = await callClaude(apiKey, prompt, 4000);
