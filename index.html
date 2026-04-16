@@ -392,8 +392,116 @@
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 
+  /* ---- Persona Switcher ---- */
+  .persona-switcher {
+    display: flex;
+    gap: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 3px;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+  .persona-btn {
+    flex: 1;
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-body);
+    border: none;
+    border-radius: calc(var(--radius) - 2px);
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--text2);
+    background: transparent;
+    text-align: left;
+    line-height: 1.3;
+  }
+  .persona-btn.active {
+    background: var(--accent);
+    color: white;
+    box-shadow: 0 1px 6px rgba(37,99,235,0.3);
+  }
+  .persona-btn:not(.active):hover { background: var(--surface2); color: var(--text); }
+  .persona-sub {
+    display: block;
+    font-size: 11px;
+    font-weight: 400;
+    opacity: 0.75;
+    margin-top: 1px;
+  }
+  .persona-btn.active .persona-sub { opacity: 0.85; }
+
+  /* ---- Pro Serv Module Checklist ---- */
+  .module-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 1rem;
+  }
+  .module-check {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--surface2);
+  }
+  .module-check:hover { border-color: #93C5FD; background: var(--accent-light); }
+  .module-check.checked { border-color: var(--accent); background: var(--accent-light); }
+  .module-check input[type="checkbox"] {
+    width: 15px; height: 15px;
+    accent-color: var(--accent);
+    cursor: pointer; flex-shrink: 0;
+  }
+  .module-check label {
+    font-size: 13px; font-weight: 500;
+    color: var(--text); cursor: pointer; margin: 0;
+  }
+
+  .module-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 8px;
+    display: none;
+  }
+  .module-block.visible { display: block; }
+  .module-block-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .module-req-row {
+    display: grid;
+    grid-template-columns: 72px 1fr auto;
+    gap: 8px;
+    margin-bottom: 6px;
+    align-items: center;
+  }
+  .module-req-id {
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    color: var(--accent);
+    background: var(--accent-light);
+    border: 1px solid #BFDBFE;
+    border-radius: 4px;
+    padding: 7px 8px;
+    text-align: center;
+  }
+
   @media (max-width: 580px) {
-    .two-col, .image-upload-pair { grid-template-columns: 1fr; }
+    .two-col, .image-upload-pair, .module-grid { grid-template-columns: 1fr; }
     main { padding: 1.5rem 1rem 3rem; }
   }
 </style>
@@ -412,6 +520,18 @@
   <h1 class="page-title">BRD Generator</h1>
   <p class="page-subtitle">Fill in the details below to generate a Business Requirements Document and Technical Specification.</p>
 
+  <!-- Persona Switcher -->
+  <div class="persona-switcher">
+    <button class="persona-btn active" id="btn-persona-pm" onclick="switchPersona('pm')">
+      Product Manager
+      <span class="persona-sub">Feature BRDs &amp; user stories</span>
+    </button>
+    <button class="persona-btn" id="btn-persona-ps" onclick="switchPersona('ps')">
+      Professional Services
+      <span class="persona-sub">Client implementation BRDs</span>
+    </button>
+  </div>
+
   <div class="banner banner-loading" id="banner-loading">⏳ Loading session data…</div>
   <div class="banner banner-success" id="banner-success">✦ Form pre-filled from Claude Code — review the fields below then click Generate.</div>
   <div class="banner banner-error"   id="banner-error">⚠ Could not load session data. You can fill the form manually.</div>
@@ -424,6 +544,9 @@
       <div class="api-key-note">Your key is never stored or sent anywhere except the Anthropic API.</div>
     </div>
   </div>
+
+  <!-- ===== PM PERSONA FORM ===== -->
+  <div id="pm-form">
 
   <div class="card">
     <div class="card-title">User Story</div>
@@ -493,6 +616,162 @@
     <div class="card-note">The developer section (repo, branch, PR links, files changed) will appear as labeled placeholders in the downloaded Technical Doc for your dev team to complete.</div>
   </div>
 
+  </div><!-- end #pm-form -->
+
+  <!-- ===== PRO SERV PERSONA FORM ===== -->
+  <div id="ps-form" style="display:none">
+
+  <div class="card">
+    <div class="card-title">Client Information</div>
+    <div class="two-col">
+      <div class="field-group">
+        <label>Client Name</label>
+        <input type="text" id="ps-client-name" placeholder="e.g. Wineshipping" />
+      </div>
+      <div class="field-group">
+        <label>Project / Implementation Name</label>
+        <input type="text" id="ps-project-name" placeholder="e.g. Wineshipping BillingPlatform Implementation" />
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="field-group">
+        <label>Phase</label>
+        <input type="text" id="ps-phase" placeholder="e.g. Phase 1 – Definition and Analysis" />
+      </div>
+      <div class="field-group">
+        <label>Prepared By</label>
+        <input type="text" id="ps-prepared-by" placeholder="Consultant name" />
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="field-group">
+        <label>Reviewed By <span style="font-weight:400;color:var(--text3)">(optional)</span></label>
+        <input type="text" id="ps-reviewed-by" placeholder="e.g. Program Manager" />
+      </div>
+      <div class="field-group">
+        <label>Approved By <span style="font-weight:400;color:var(--text3)">(optional)</span></label>
+        <input type="text" id="ps-approved-by" placeholder="e.g. Client Project Sponsor" />
+      </div>
+    </div>
+    <div class="field-group" style="max-width:200px">
+      <label>Date</label>
+      <input type="text" id="ps-date" placeholder="e.g. 6/15/2025" />
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Introduction</div>
+    <div class="field-group">
+      <label>Company Overview</label>
+      <textarea id="ps-company-overview" rows="4" placeholder="Describe the client — who they are, what they do, their industry and business model…"></textarea>
+    </div>
+    <div class="field-group">
+      <label>Project Overview</label>
+      <textarea id="ps-project-overview" rows="4" placeholder="What challenges do they have today? What will BillingPlatform automate, replace, or improve? What are the key goals of this implementation?"></textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Functional Modules</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:1rem">Select the areas to include in this BRD. For each selected area, briefly describe what was discussed or agreed upon — Claude will generate the full section.</p>
+    <div class="module-grid">
+      <div class="module-check" id="chk-wrap-ecosystem">
+        <input type="checkbox" id="chk-ecosystem" onchange="toggleModule(this,'mod-ecosystem','chk-wrap-ecosystem')" />
+        <label for="chk-ecosystem">Ecosystem &amp; Integrations</label>
+      </div>
+      <div class="module-check" id="chk-wrap-catalog">
+        <input type="checkbox" id="chk-catalog" onchange="toggleModule(this,'mod-catalog','chk-wrap-catalog')" />
+        <label for="chk-catalog">Product Catalog</label>
+      </div>
+      <div class="module-check" id="chk-wrap-pricing">
+        <input type="checkbox" id="chk-pricing" onchange="toggleModule(this,'mod-pricing','chk-wrap-pricing')" />
+        <label for="chk-pricing">Pricing &amp; Rating</label>
+      </div>
+      <div class="module-check" id="chk-wrap-accounts">
+        <input type="checkbox" id="chk-accounts" onchange="toggleModule(this,'mod-accounts','chk-wrap-accounts')" />
+        <label for="chk-accounts">Accounts &amp; Invoicing</label>
+      </div>
+      <div class="module-check" id="chk-wrap-contracts">
+        <input type="checkbox" id="chk-contracts" onchange="toggleModule(this,'mod-contracts','chk-wrap-contracts')" />
+        <label for="chk-contracts">Contracts</label>
+      </div>
+      <div class="module-check" id="chk-wrap-accounting">
+        <input type="checkbox" id="chk-accounting" onchange="toggleModule(this,'mod-accounting','chk-wrap-accounting')" />
+        <label for="chk-accounting">Accounting, Finance &amp; AR</label>
+      </div>
+      <div class="module-check" id="chk-wrap-roles">
+        <input type="checkbox" id="chk-roles" onchange="toggleModule(this,'mod-roles','chk-wrap-roles')" />
+        <label for="chk-roles">Roles &amp; Security</label>
+      </div>
+      <div class="module-check" id="chk-wrap-reports">
+        <input type="checkbox" id="chk-reports" onchange="toggleModule(this,'mod-reports','chk-wrap-reports')" />
+        <label for="chk-reports">Reports</label>
+      </div>
+      <div class="module-check" id="chk-wrap-migration">
+        <input type="checkbox" id="chk-migration" onchange="toggleModule(this,'mod-migration','chk-wrap-migration')" />
+        <label for="chk-migration">Data Migration</label>
+      </div>
+      <div class="module-check" id="chk-wrap-scope">
+        <input type="checkbox" id="chk-scope" onchange="toggleModule(this,'mod-scope','chk-wrap-scope')" />
+        <label for="chk-scope">Scope Boundaries</label>
+      </div>
+    </div>
+
+    <!-- Module detail blocks -->
+    <div class="module-block" id="mod-ecosystem">
+      <div class="module-block-title">Ecosystem &amp; Integrations</div>
+      <div class="scenario-label" style="margin-bottom:5px">What systems integrate with BillingPlatform? Describe data flows, file formats, directions, and any SSO.</div>
+      <textarea id="txt-ecosystem" rows="4" placeholder="e.g. Usage and payment data sent from Databricks to BP via SFTP CSV. BP sends invoices, invoice details, and rate details back to Databricks. SSO via Microsoft Azure for both internal users and the customer portal."></textarea>
+    </div>
+    <div class="module-block" id="mod-catalog">
+      <div class="module-block-title">Product Catalog</div>
+      <div class="scenario-label" style="margin-bottom:5px">Describe the client's products and services, how they're charged, and any special product types (bundled, usage-based, flat fee, etc.).</div>
+      <textarea id="txt-catalog" rows="4" placeholder="e.g. Primarily usage-based products including storage, fulfillment, fuel surcharges, and shipping. Bundled rates for groups of products. One-time fee products for add-ons like gift notes and ice packs. Discount products with invoice visibility."></textarea>
+    </div>
+    <div class="module-block" id="mod-pricing">
+      <div class="module-block-title">Pricing &amp; Rating</div>
+      <div class="scenario-label" style="margin-bottom:5px">How are rates structured? Tiered? By account? Are there bulk rate updates, promotional pricing, or surcharges?</div>
+      <textarea id="txt-pricing" rows="4" placeholder="e.g. Rates stored at the contract level. Tiered and warehouse-specific rate cards. Annual bulk rate adjustments needed. Promotional pricing and carrier surcharges during peak seasons. Customer-visible discount lines on invoices."></textarea>
+    </div>
+    <div class="module-block" id="mod-accounts">
+      <div class="module-block-title">Accounts &amp; Invoicing</div>
+      <div class="scenario-label" style="margin-bottom:5px">Describe account hierarchy, invoicing frequency, delivery method, payment terms, and any custom account attributes.</div>
+      <textarea id="txt-accounts" rows="4" placeholder="e.g. Parent/child account hierarchy. Invoicing monthly, bi-weekly, weekly, or ad-hoc. Invoices sent via email PDF or customer portal link. Auto-close, manual approval. Custom fields: D365 customer number, company chain ID."></textarea>
+    </div>
+    <div class="module-block" id="mod-contracts">
+      <div class="module-block-title">Contracts</div>
+      <div class="scenario-label" style="margin-bottom:5px">How are contracted rates managed? Are there bulk data migrations? One contract per account or multiple?</div>
+      <textarea id="txt-contracts" rows="4" placeholder="e.g. One contract per account at either parent or child level. Contracted rates override product defaults. Initial migration via bulk data loader. Post-migration, contracts managed manually. Historical rate records required."></textarea>
+    </div>
+    <div class="module-block" id="mod-accounting">
+      <div class="module-block-title">Accounting, Finance &amp; AR</div>
+      <div class="scenario-label" style="margin-bottom:5px">What external accounting system is used? How are payments, credits, and dunning handled? What data flows back to their accounting system?</div>
+      <textarea id="txt-accounting" rows="4" placeholder="e.g. D365 is source of truth for accounting. Payments managed in D365, passed to BP via SFTP lockbox. Manual payment and credit allocation. Credits managed per billing cycle. Up to 2 custom dunning processes via BP workflow engine."></textarea>
+    </div>
+    <div class="module-block" id="mod-roles">
+      <div class="module-block-title">Roles &amp; Security</div>
+      <div class="scenario-label" style="margin-bottom:5px">What user roles need access? Any SSO? What permissions are needed (read-only vs admin vs billing-only)?</div>
+      <textarea id="txt-roles" rows="4" placeholder="e.g. Internal billing team users with full admin rights. Customers access portal with self-service limited to billing address and contact info. SSO via Azure AD for both user types."></textarea>
+    </div>
+    <div class="module-block" id="mod-reports">
+      <div class="module-block-title">Reports</div>
+      <div class="scenario-label" style="margin-bottom:5px">What reporting is required? What data exports or E-Files are needed? Any specific reports for operations or customers?</div>
+      <textarea id="txt-reports" rows="4" placeholder="e.g. Invoice detail E-File available in customer portal. Aging and GL data exported to D365 for reconciliation. Usage error reporting for troubleshooting. Rate source traceability on invoice charges."></textarea>
+    </div>
+    <div class="module-block" id="mod-migration">
+      <div class="module-block-title">Data Migration</div>
+      <div class="scenario-label" style="margin-bottom:5px">What data needs to be migrated? What tools or templates will be used? What's in scope vs out of scope?</div>
+      <textarea id="txt-migration" rows="4" placeholder="e.g. Customer accounts migrated via BP bulk data loader. Contract data migrated with loader template (rates migrated separately). Historical invoice data out of scope for Phase 1."></textarea>
+    </div>
+    <div class="module-block" id="mod-scope">
+      <div class="module-block-title">Scope Boundaries</div>
+      <div class="scenario-label" style="margin-bottom:5px">What is explicitly out of scope? What's deferred to a future phase? Any known limitations?</div>
+      <textarea id="txt-scope" rows="4" placeholder="e.g. Multi-currency out of scope (USD only). Multi-language out of scope. Collections module not included Phase 1. No automated account sync from D365 — manual updates only."></textarea>
+    </div>
+  </div><!-- end Functional Modules card -->
+
+  </div><!-- end #ps-form -->
+
   <button class="generate-btn" id="gen-btn" onclick="generateAll()">Generate BRD + Technical Doc</button>
 
   <div class="output-section" id="brd-output-section">
@@ -519,6 +798,20 @@
       <div class="output-body"><pre id="tech-output-text"></pre></div>
     </div>
   </div>
+
+  <!-- Pro Serv BRD output (separate, styled like BRD) -->
+  <div class="output-section" id="ps-output-section" style="display:none">
+    <div class="output-card">
+      <div class="output-toolbar">
+        <span class="output-label" id="ps-output-label">Generated Pro Serv BRD</span>
+        <div class="toolbar-actions">
+          <button class="copy-btn" onclick="copyPS()">Copy</button>
+          <button class="download-btn" onclick="downloadPSBRD()">Download BRD</button>
+        </div>
+      </div>
+      <div class="output-body"><pre id="ps-output-text"></pre></div>
+    </div>
+  </div>
 </main>
 
 <script>
@@ -526,6 +819,31 @@
 
   let scenarioCount = 0;
   let exampleCount  = 0;
+  let currentPersona = 'pm';
+
+  /* ============================================================
+     PERSONA SWITCHING
+  ============================================================ */
+  function switchPersona(persona) {
+    currentPersona = persona;
+    document.getElementById('btn-persona-pm').classList.toggle('active', persona === 'pm');
+    document.getElementById('btn-persona-ps').classList.toggle('active', persona === 'ps');
+    document.getElementById('pm-form').style.display  = persona === 'pm' ? '' : 'none';
+    document.getElementById('ps-form').style.display  = persona === 'ps' ? '' : 'none';
+    document.getElementById('gen-btn').textContent    = persona === 'pm' ? 'Generate BRD + Technical Doc' : 'Generate Pro Serv BRD';
+    // hide all outputs when switching
+    document.getElementById('brd-output-section').style.display  = 'none';
+    document.getElementById('tech-output-section').style.display = 'none';
+    document.getElementById('ps-output-section').style.display   = 'none';
+  }
+
+  /* ============================================================
+     MODULE CHECKLIST
+  ============================================================ */
+  function toggleModule(checkbox, blockId, wrapId) {
+    document.getElementById(blockId).classList.toggle('visible', checkbox.checked);
+    document.getElementById(wrapId).classList.toggle('checked', checkbox.checked);
+  }
 
   function escHtml(str = '') {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -786,6 +1104,7 @@
   }
 
   async function generateAll() {
+    if (currentPersona === 'ps') { return generateProServBRD(); }
     const apiKey         = getApiKey();
     const featureName    = document.getElementById('feature-name').value.trim();
     const userRole       = document.getElementById('user-role').value.trim() || 'a user';
@@ -962,6 +1281,256 @@ ${'═'.repeat(57)}`;
   }
 
   function today() { return new Date().toISOString().slice(0,10); }
+
+  /* ============================================================
+     PRO SERV BRD GENERATION
+  ============================================================ */
+  const PS_MODULES = [
+    { id: 'ecosystem', chk: 'chk-ecosystem', label: 'ECOSYSTEM & INTEGRATIONS', prefix: 'E',
+      sectionNum: '1' },
+    { id: 'catalog',   chk: 'chk-catalog',   label: 'PRODUCT CATALOG',          prefix: 'P',
+      sectionNum: '2' },
+    { id: 'pricing',   chk: 'chk-pricing',   label: 'PRICING & RATING',         prefix: 'Pr',
+      sectionNum: '3' },
+    { id: 'accounts',  chk: 'chk-accounts',  label: 'ACCOUNTS & INVOICING',     prefix: 'A',
+      sectionNum: '4' },
+    { id: 'contracts', chk: 'chk-contracts', label: 'CONTRACTS',                prefix: 'C',
+      sectionNum: '5' },
+    { id: 'accounting',chk: 'chk-accounting',label: 'ACCOUNTING, FINANCE & AR', prefix: 'Ac',
+      sectionNum: '6' },
+    { id: 'roles',     chk: 'chk-roles',     label: 'ROLES & SECURITY',         prefix: 'Rs',
+      sectionNum: '7' },
+    { id: 'reports',   chk: 'chk-reports',   label: 'REPORTS',                  prefix: 'Rp',
+      sectionNum: '8' },
+    { id: 'migration', chk: 'chk-migration', label: 'DATA MIGRATION',           prefix: 'D',
+      sectionNum: '9' },
+    { id: 'scope',     chk: 'chk-scope',     label: 'SCOPE BOUNDARIES',         prefix: 'S',
+      sectionNum: '10' },
+  ];
+
+  async function generateProServBRD() {
+    const apiKey = getApiKey();
+    if (!apiKey) { alert('Please enter your Anthropic API key.'); return; }
+
+    const clientName     = document.getElementById('ps-client-name').value.trim();
+    const projectName    = document.getElementById('ps-project-name').value.trim();
+    const phase          = document.getElementById('ps-phase').value.trim();
+    const preparedBy     = document.getElementById('ps-prepared-by').value.trim();
+    const reviewedBy     = document.getElementById('ps-reviewed-by').value.trim();
+    const approvedBy     = document.getElementById('ps-approved-by').value.trim();
+    const psDate         = document.getElementById('ps-date').value.trim() || today();
+    const companyOverview = document.getElementById('ps-company-overview').value.trim();
+    const projectOverview = document.getElementById('ps-project-overview').value.trim();
+
+    if (!clientName) { alert('Please enter the client name.'); return; }
+    if (!companyOverview && !projectOverview) { alert('Please fill in the Company or Project Overview.'); return; }
+
+    // Collect selected modules
+    const selectedModules = PS_MODULES.filter(m => document.getElementById(m.chk)?.checked);
+    if (selectedModules.length === 0) { alert('Please select at least one functional module.'); return; }
+
+    const btn = document.getElementById('gen-btn');
+    btn.disabled = true; btn.textContent = 'Generating…';
+    document.getElementById('ps-output-section').style.display = 'block';
+    document.getElementById('ps-output-label').innerHTML = '<span class="status-dot"></span> Generating…';
+    document.getElementById('ps-output-text').textContent = '';
+
+    // Build module context for the prompt
+    const moduleContext = selectedModules.map(m => {
+      const notes = document.getElementById('txt-' + m.id)?.value.trim() || '';
+      return `--- SECTION ${m.sectionNum}: ${m.label} ---\nConsultant notes: ${notes || '(none provided — infer from client type and project overview)'}`;
+    }).join('\n\n');
+
+    const toc = selectedModules.map(m => `  ${m.sectionNum}. ${m.label}`).join('\n');
+
+    const prompt = `You are a BillingPlatform Professional Services consultant writing a Business Requirements Document (BRD) for a client implementation. Generate a complete, professional BRD following the exact structure and tone of a real BillingPlatform implementation document.
+
+CLIENT: ${clientName}
+PROJECT: ${projectName || clientName + ' BillingPlatform Implementation'}
+PHASE: ${phase || 'Phase 1 – Definition and Analysis'}
+PREPARED BY: ${preparedBy || 'BillingPlatform Professional Services'}
+REVIEWED BY: ${reviewedBy || ''}
+APPROVED BY: ${approvedBy || ''}
+DATE: ${psDate}
+REVISION: 1
+
+COMPANY OVERVIEW:
+${companyOverview || 'Not provided — infer from client name and project context.'}
+
+PROJECT OVERVIEW:
+${projectOverview || 'Not provided — infer from client name and company overview.'}
+
+SECTIONS TO GENERATE:
+${toc}
+
+CONSULTANT NOTES BY SECTION:
+${moduleContext}
+
+INSTRUCTIONS:
+Generate the complete BRD document in this exact format:
+
+1. Start with a header block:
+BUSINESS REQUIREMENTS DOCUMENT
+[PHASE]
+PREPARED BY: [name]
+REVIEWED BY: [name]
+APPROVED BY: [name]
+DATE: [date]
+REVISION #: 1
+
+2. PURPOSE & VERSION HISTORY
+Write a 2-3 sentence Document Purpose explaining this BRD defines the functionality required to support [Client]'s business requirements and how BillingPlatform will achieve the client's goals. Include a simple Change Log section header.
+
+3. INTRODUCTION
+COMPANY OVERVIEW: Write a professional 2-3 paragraph narrative about the client's business.
+PROJECT OVERVIEW: Write a 2-3 paragraph narrative describing the business challenges being solved and what BillingPlatform will deliver.
+
+4. For EACH selected section, generate:
+[Section Number] – [SECTION NAME]
+[SECTION NAME] OVERVIEW
+Write a professional 2-4 paragraph narrative overview of how BillingPlatform will address this functional area for ${clientName}. Be specific to the consultant notes and client context. Include specific BP features, configuration options, and how they map to the client's needs.
+
+[SECTION NAME] REQUIREMENTS
+ID | Requirement
+Generate 5-10 specific, measurable requirements in the format:
+[Prefix].[N] | [Requirement text — must be specific, actionable, and reference ${clientName} by name]
+
+Use the requirement ID prefix provided. Number sequentially starting from 1. Write requirements as capabilities the system needs to support or actions BillingPlatform/the client will take.
+
+5. End with:
+---
+END OF DOCUMENT
+
+TONE: Professional, consultant-grade. Mirror the structure, specificity, and voice of a real BP implementation BRD. Reference ${clientName} by name throughout. Each requirement should be a single, testable statement.
+
+Output ONLY the document content — no preamble, no explanation, no markdown formatting.`;
+
+    try {
+      const text = await callClaude(apiKey, prompt, 4000);
+      document.getElementById('ps-output-text').textContent = text;
+      document.getElementById('ps-output-label').textContent = 'Generated Pro Serv BRD';
+    } catch (e) {
+      document.getElementById('ps-output-text').textContent = 'Error: ' + e.message;
+      document.getElementById('ps-output-label').textContent = 'Error';
+    }
+
+    btn.disabled = false; btn.textContent = 'Generate Pro Serv BRD';
+  }
+
+  function copyPS() {
+    navigator.clipboard.writeText(document.getElementById('ps-output-text').textContent).then(() => {
+      const btn = document.querySelector('#ps-output-section .copy-btn');
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy', 2000);
+    });
+  }
+
+  function downloadPSBRD() {
+    const clientName  = document.getElementById('ps-client-name').value.trim() || 'Client';
+    const projectName = document.getElementById('ps-project-name').value.trim() || 'BRD';
+    const content     = document.getElementById('ps-output-text').textContent;
+    const date        = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+
+    // Convert plain-text BRD to structured HTML
+    const lines = escHtml(content).split('\n');
+    let htmlBody = '';
+    let inReqTable = false;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const raw  = line.trim();
+
+      // Section headers (ALL CAPS lines that look like headings)
+      if (/^[A-Z0-9 \-–&,]+$/.test(raw) && raw.length > 4 && raw.length < 80 && !raw.includes('|')) {
+        if (inReqTable) { htmlBody += '</tbody></table></div>'; inReqTable = false; }
+        // Distinguish top-level section numbers vs sub-headings
+        if (/^\d+\s*[–\-]/.test(raw)) {
+          htmlBody += `<h2 class="sec-head">${raw}</h2>`;
+        } else if (raw === 'BUSINESS REQUIREMENTS DOCUMENT') {
+          htmlBody += `<h1 class="doc-title">${raw}</h1>`;
+        } else {
+          htmlBody += `<h3 class="sub-head">${raw}</h3>`;
+        }
+        continue;
+      }
+
+      // Requirements table rows (contain |)
+      if (raw.includes(' | ') && /^[A-Za-z]+\.\d+/.test(raw)) {
+        if (!inReqTable) {
+          htmlBody += '<div class="req-table"><table><thead><tr><th>ID</th><th>Requirement</th></tr></thead><tbody>';
+          inReqTable = true;
+        }
+        const parts = raw.split(' | ');
+        htmlBody += `<tr><td class="req-id">${parts[0]}</td><td>${parts.slice(1).join(' | ')}</td></tr>`;
+        continue;
+      }
+
+      // Header metadata lines (PREPARED BY: etc.)
+      if (/^(PREPARED BY|REVIEWED BY|APPROVED BY|DATE|REVISION|PHASE|CLIENT|PROJECT):/.test(raw)) {
+        if (inReqTable) { htmlBody += '</tbody></table></div>'; inReqTable = false; }
+        const colonIdx = raw.indexOf(':');
+        const key = raw.slice(0, colonIdx);
+        const val = raw.slice(colonIdx + 1).trim();
+        if (val) htmlBody += `<div class="meta-row"><span class="meta-key">${key}</span><span class="meta-val">${val}</span></div>`;
+        continue;
+      }
+
+      // Dividers
+      if (/^[-=─]+$/.test(raw)) {
+        if (inReqTable) { htmlBody += '</tbody></table></div>'; inReqTable = false; }
+        continue;
+      }
+
+      // Regular paragraph text
+      if (raw) {
+        if (inReqTable) { htmlBody += '</tbody></table></div>'; inReqTable = false; }
+        htmlBody += `<p>${raw}</p>`;
+      } else {
+        if (inReqTable) { htmlBody += '</tbody></table></div>'; inReqTable = false; }
+      }
+    }
+    if (inReqTable) htmlBody += '</tbody></table></div>';
+
+    const html = `<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/>
+<title>BRD — ${escHtml(clientName)}</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  body { font-family:'Plus Jakarta Sans',sans-serif; max-width:860px; margin:0 auto; padding:48px 40px; color:#0F172A; line-height:1.7; background:#fff; font-size:14px; }
+  .doc-header { border-bottom:3px solid #2563EB; padding-bottom:24px; margin-bottom:36px; display:flex; justify-content:space-between; align-items:flex-end; }
+  .brand { font-size:11px; font-weight:800; color:#2563EB; letter-spacing:.12em; text-transform:uppercase; margin-bottom:4px; }
+  .doc-type { font-size:11px; color:#94A3B8; letter-spacing:.07em; text-transform:uppercase; font-weight:600; }
+  .doc-title { font-size:26px; font-weight:800; letter-spacing:-.02em; color:#0F172A; margin:10px 0 0; }
+  .header-meta { text-align:right; font-size:13px; color:#475569; line-height:1.8; }
+  .meta-row { display:flex; gap:16px; margin:3px 0; font-size:13px; }
+  .meta-key { font-weight:700; color:#475569; min-width:120px; text-transform:uppercase; font-size:11px; letter-spacing:.06em; }
+  .meta-val { color:#0F172A; }
+  h1.doc-title { font-size:22px; font-weight:800; color:#0F172A; margin:20px 0 8px; letter-spacing:-.02em; }
+  h2.sec-head { font-size:15px; font-weight:800; color:#0F172A; margin:36px 0 12px; padding-bottom:8px; border-bottom:2px solid #E2E8F0; letter-spacing:-.01em; }
+  h3.sub-head { font-size:11px; font-weight:700; color:#2563EB; text-transform:uppercase; letter-spacing:.1em; margin:24px 0 8px; }
+  p { margin:0 0 12px; color:#1E293B; }
+  .req-table { margin:12px 0 20px; border-radius:8px; overflow:hidden; border:1px solid #E2E8F0; }
+  .req-table table { width:100%; border-collapse:collapse; font-size:13px; }
+  .req-table thead th { background:#2563EB; color:white; padding:9px 14px; text-align:left; font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; }
+  .req-table thead th:first-child { width:80px; }
+  .req-table tbody tr:nth-child(even) td { background:#F8FAFC; }
+  .req-table tbody td { padding:8px 14px; border-bottom:1px solid #E2E8F0; vertical-align:top; }
+  .req-table tbody tr:last-child td { border-bottom:none; }
+  .req-id { font-family:'DM Mono',monospace; font-size:12px; font-weight:600; color:#2563EB; }
+</style></head>
+<body>
+<div class="doc-header">
+  <div>
+    <div class="brand">BillingPlatform</div>
+    <div class="doc-type">Business Requirements Document</div>
+  </div>
+  <div class="header-meta">${escHtml(date)}<br/>${escHtml(clientName)}</div>
+</div>
+${htmlBody}
+</body></html>`;
+
+    triggerDownload(html, `BRD_${clientName.replace(/[^a-zA-Z0-9]/g,'_')}_${today()}.html`);
+  }
 
   const sessionId = new URLSearchParams(window.location.search).get('session');
   if (sessionId) loadSession(sessionId);
